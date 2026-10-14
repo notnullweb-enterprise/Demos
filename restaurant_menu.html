@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Menú digital · Restaurante — Plantilla Demo</title>
+<meta name="description" content="Plantilla demo de menú digital: categorías, filtros dietéticos, buscador y pedido directo por WhatsApp." />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<script>
+  if (window.tailwind) { tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          bone:  { DEFAULT: '#faf8f5', dark: '#f1ece4' },
+          ink:   { DEFAULT: '#12100e', 700: '#1e1a17', 500: '#3a3430' },
+          wine:  { DEFAULT: '#8c2f39', light: '#b04b55', dark: '#6d2229' },
+          moss:  '#3f6f4f'
+        },
+        fontFamily: {
+          display: ['"Playfair Display"', 'Georgia', 'serif'],
+          sans: ['Inter', 'system-ui', 'sans-serif']
+        },
+        boxShadow: {
+          card: '0 10px 40px -22px rgba(18,16,14,.45)',
+          drawer: '-30px 0 80px -30px rgba(18,16,14,.5)'
+        }
+      }
+    }
+  } }
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { -webkit-font-smoothing: antialiased; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .img-holder { background-image: linear-gradient(135deg,#2a241f 0%,#4a4038 55%,#6d5f52 100%); }
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .55s ease, transform .55s cubic-bezier(.22,1,.36,1); }
+  .reveal.in { opacity: 1; transform: none; }
+  .tab-active { background:#12100e !important; color:#faf8f5 !important; border-color:#12100e !important; }
+  .drawer { transition: transform .4s cubic-bezier(.22,1,.36,1); }
+  .fade { transition: opacity .3s ease, visibility .3s ease; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity:1; transform:none; transition:none; } }
+</style>
+</head>
+<body class="min-h-screen bg-bone font-sans text-ink antialiased">
+
+<!-- ══════════ TOP BAR ══════════ -->
+<header id="topbar" class="fixed inset-x-0 top-0 z-40 transition-all duration-300">
+  <div class="mx-auto max-w-5xl px-3 sm:px-6">
+    <div id="bar" class="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-ink/10 bg-white/85 px-3 py-2.5 shadow-card backdrop-blur-xl transition sm:mt-4 sm:rounded-full sm:px-5">
+      <a href="#top" class="flex items-center gap-2.5">
+        <span id="brandLogo" class="grid h-9 w-9 place-items-center rounded-full bg-ink font-display text-sm font-semibold text-bone">CN</span>
+        <span class="leading-tight">
+          <span id="brandName" class="block font-display text-base font-semibold text-ink">Casa Nómade</span>
+          <span id="brandTag" class="hidden text-[10px] uppercase tracking-[.22em] text-ink/45 sm:block">Cocina de autor</span>
+        </span>
+      </a>
+      <div class="flex items-center gap-2">
+        <a id="directWa" href="#" target="_blank" rel="noopener" class="hidden items-center gap-2 rounded-full border border-ink/15 px-4 py-2 text-xs font-semibold text-ink transition hover:bg-ink hover:text-bone sm:inline-flex">
+          <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 fill-current"><path d="M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884a9.82 9.82 0 0 1 6.988 2.896 9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.414"/></svg>
+          Contacto
+        </a>
+        <button id="topCart" class="relative inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-xs font-semibold text-bone transition hover:bg-ink-700">
+          Ver pedido
+          <span id="topCartCount" class="grid h-5 min-w-5 place-items-center rounded-full bg-wine px-1 text-[11px] font-bold">0</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════ HEADER / MARCA ══════════ -->
+<section id="top" class="relative overflow-hidden bg-ink pt-24 sm:pt-28">
+  <div class="img-holder absolute inset-0 opacity-70">
+    <img id="heroImg" class="h-full w-full object-cover" alt="" onerror="this.remove()" />
+  </div>
+  <div class="absolute inset-0 bg-gradient-to-b from-ink/85 via-ink/60 to-ink"></div>
+  <div class="relative mx-auto max-w-5xl px-4 pb-10 pt-8 text-center sm:pb-14">
+    <p id="heroEyebrow" class="text-[11px] font-semibold uppercase tracking-[.4em] text-wine-light"></p>
+    <h1 id="heroTitle" class="mt-4 font-display text-4xl font-semibold leading-tight text-bone sm:text-6xl"></h1>
+    <p id="heroDesc" class="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-bone/60 sm:text-base"></p>
+    <div class="mt-6 flex flex-wrap items-center justify-center gap-2 text-[11px] text-bone/55">
+      <span id="heroHours" class="rounded-full border border-bone/15 px-3.5 py-1.5"></span>
+      <span id="heroAddress" class="rounded-full border border-bone/15 px-3.5 py-1.5"></span>
+      <span id="heroDelivery" class="rounded-full bg-wine/90 px-3.5 py-1.5 font-semibold text-white"></span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ BUSCADOR + FILTROS (sticky) ══════════ -->
+<div id="filters" class="sticky top-[70px] z-30 border-b border-ink/10 bg-bone/95 backdrop-blur-xl sm:top-[74px]">
+  <div class="mx-auto max-w-5xl px-4 py-3 sm:px-6 sm:py-4">
+    <!-- Buscador -->
+    <div class="relative">
+      <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-ink/35">
+        <svg viewBox="0 0 24 24" class="h-4.5 w-4.5 h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4" stroke-linecap="round"/></svg>
+      </span>
+      <input id="search" type="search" placeholder="Buscar plato, ingrediente…" autocomplete="off"
+             class="w-full rounded-full border border-ink/12 bg-white py-3 pl-11 pr-11 text-sm text-ink placeholder:text-ink/35 outline-none transition focus:border-ink/40 focus:shadow-card" />
+      <button id="clearSearch" class="absolute right-3 top-1/2 hidden h-7 w-7 -translate-y-1/2 place-items-center rounded-full bg-ink/8 text-ink/50 transition hover:bg-ink/15" aria-label="Limpiar">
+        <svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <!-- Tabs de categoría -->
+    <div id="categoryTabs" class="no-scrollbar mt-3 flex gap-2 overflow-x-auto pb-0.5"></div>
+
+    <!-- Filtros dietéticos -->
+    <div id="dietFilters" class="mt-2.5 flex flex-wrap items-center gap-2"></div>
+  </div>
+</div>
+
+<!-- ══════════ LISTADO ══════════ -->
+<main class="mx-auto max-w-5xl px-4 pb-40 pt-6 sm:px-6 sm:pb-32">
+  <div class="flex items-center justify-between gap-3 pb-4">
+    <p id="resultCount" class="text-xs font-semibold uppercase tracking-[.18em] text-ink/45"></p>
+    <button id="resetFilters" class="hidden text-xs font-semibold text-wine underline decoration-wine/40 underline-offset-4 transition hover:text-wine-dark">Limpiar filtros</button>
+  </div>
+
+  <div id="menuRoot"></div>
+
+  <div id="emptyState" class="hidden rounded-3xl border border-dashed border-ink/20 bg-white p-12 text-center">
+    <p class="font-display text-2xl text-ink">Sin resultados</p>
+    <p class="mt-2 text-sm text-ink/55">Probá con otra palabra o quitá algún filtro.</p>
+    <button id="emptyReset" class="mt-5 rounded-full bg-ink px-6 py-3 text-xs font-semibold uppercase tracking-wider text-bone transition hover:bg-ink-700">Ver todo el menú</button>
+  </div>
+</main>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer class="border-t border-ink/10 bg-bone-dark pb-32 pt-12 sm:pb-28">
+  <div class="mx-auto grid max-w-5xl gap-8 px-4 sm:grid-cols-3 sm:px-6">
+    <div>
+      <p id="footName" class="font-display text-xl font-semibold text-ink"></p>
+      <p id="footDesc" class="mt-2 text-sm leading-relaxed text-ink/55"></p>
+    </div>
+    <div>
+      <p class="text-[11px] font-semibold uppercase tracking-[.25em] text-ink/40">Horarios</p>
+      <p id="footHours" class="mt-3 text-sm text-ink/70"></p>
+    </div>
+    <div>
+      <p class="text-[11px] font-semibold uppercase tracking-[.25em] text-ink/40">Contacto</p>
+      <ul id="footContact" class="mt-3 space-y-2 text-sm text-ink/70"></ul>
+    </div>
+  </div>
+  <p class="mx-auto mt-10 max-w-5xl border-t border-ink/10 px-4 pt-6 text-center text-xs text-ink/40 sm:px-6">Plantilla demo · Menú digital con pedidos por WhatsApp</p>
+</footer>
+
+<!-- ══════════ BARRA FLOTANTE DE PEDIDO ══════════ -->
+<div id="cartBar" class="pointer-events-none fixed inset-x-0 bottom-0 z-40 px-3 pb-3 sm:px-6 sm:pb-5">
+  <div class="mx-auto max-w-5xl translate-y-[140%] opacity-0 transition-all duration-400" id="cartBarInner">
+    <button id="openDrawer" class="pointer-events-auto flex w-full items-center justify-between gap-4 rounded-2xl bg-ink px-5 py-4 text-bone shadow-2xl transition hover:bg-ink-700 sm:rounded-full">
+      <span class="flex items-center gap-3">
+        <span id="barCount" class="grid h-7 min-w-7 place-items-center rounded-full bg-wine px-1.5 text-xs font-bold">0</span>
+        <span class="text-sm font-semibold">Ver pedido</span>
+      </span>
+      <span class="flex items-center gap-3 text-sm font-semibold">
+        <span id="barTotal">$ 0</span>
+        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round"/></svg>
+      </span>
+    </button>
+  </div>
+</div>
+
+<!-- ══════════ DRAWER PEDIDO ══════════ -->
+<div id="drawerWrap" class="fixed inset-0 z-50 invisible opacity-0 fade">
+  <div id="drawerBackdrop" class="absolute inset-0 bg-ink/60 backdrop-blur-sm"></div>
+  <aside id="drawer" class="drawer absolute inset-y-0 right-0 flex w-full max-w-md translate-x-full flex-col bg-white shadow-drawer">
+    <div class="flex items-center justify-between border-b border-ink/10 px-5 py-4">
+      <div>
+        <p class="font-display text-xl font-semibold text-ink">Tu pedido</p>
+        <p id="drawerMeta" class="text-xs text-ink/45"></p>
+      </div>
+      <button id="closeDrawer" class="grid h-9 w-9 place-items-center rounded-full border border-ink/12 text-ink/60 transition hover:bg-bone" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <div id="cartItems" class="flex-1 overflow-y-auto px-5 py-4"></div>
+
+    <div id="cartFooter" class="border-t border-ink/10 px-5 py-4" style="padding-bottom:calc(1rem + env(safe-area-inset-bottom))">
+      <label class="block">
+        <span class="text-[11px] font-semibold uppercase tracking-[.2em] text-ink/40">Aclaraciones (opcional)</span>
+        <textarea id="orderNote" rows="2" placeholder="Ej: sin cebolla, extra limón, timbre 4B…"
+                  class="mt-1.5 w-full resize-none rounded-2xl border border-ink/12 bg-bone px-4 py-3 text-sm outline-none transition focus:border-ink/40"></textarea>
+      </label>
+      <div class="mt-3 flex items-center justify-between text-sm">
+        <span class="text-ink/55">Subtotal</span>
+        <span id="drawerSubtotal" class="font-display text-2xl font-semibold text-ink">$ 0</span>
+      </div>
+      <button id="sendOrder" class="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-6 py-4 text-sm font-bold text-ink transition hover:brightness-105">
+        <svg viewBox="0 0 24 24" class="h-5 w-5 fill-current"><path d="M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884a9.82 9.82 0 0 1 6.988 2.896 9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.414"/></svg>
+        Enviar pedido por WhatsApp
+      </button>
+      <button id="keepBrowsing" class="mt-2 w-full rounded-full border border-ink/12 px-6 py-3 text-xs font-semibold uppercase tracking-wider text-ink/60 transition hover:bg-bone">Seguir pidiendo</button>
+    </div>
+  </aside>
+</div>
+
+<!-- ══════════ MODAL DETALLE ══════════ -->
+<div id="itemModal" class="fixed inset-0 z-[60] hidden">
+  <div class="absolute inset-0 bg-ink/70 backdrop-blur-sm" data-close></div>
+  <div class="relative flex h-full items-end justify-center sm:items-center sm:p-6">
+    <div id="itemModalPanel" class="max-h-[92svh] w-full max-w-lg overflow-y-auto rounded-t-[28px] bg-white shadow-2xl sm:rounded-[28px]"></div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   MENU_DATA · ÚNICA FUENTE DE DATOS
+   Editá este objeto para adaptar la demo: platos, precios,
+   categorías, dietéticos, alérgenos, fotos y WhatsApp.
+   ═══════════════════════════════════════════════════════════════ */
+const MENU_DATA = {
+  brand: {
+    name: 'Casa Nómade',
+    tagline: 'Cocina de autor',
+    logo: 'CN',
+    description: 'Producto de estación, fuego y tiempo. Cocina de mercado con mirada contemporánea.',
+    heroImage: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1800&q=80'
+  },
+
+  whatsapp: { number: '5493415559876', display: '+54 9 341 555 9876' },
+  hours: 'Mar a Dom · 12:00 – 23:30',
+  address: 'Güemes 1245, Rosario',
+  delivery: 'Delivery propio 30–40 min',
+
+  currency: '$',
+
+  // Filtros dietéticos. `key` debe coincidir con diets[] de cada plato.
+  diets: [
+    { key: 'sin-tacc',     label: 'Sin TACC / Celíacos', short: 'Sin TACC', bg: '#dcfce7', fg: '#166534' },
+    { key: 'vegano',       label: 'Vegano',              short: 'Vegano',   bg: '#d1fae5', fg: '#065f46' },
+    { key: 'vegetariano',  label: 'Vegetariano',         short: 'Vegetariano', bg: '#ecfccb', fg: '#3f6212' },
+    { key: 'infantil',     label: 'Menú Infantil',       short: 'Infantil', bg: '#fef3c7', fg: '#92400e' }
+  ],
+
+  categories: [
+    { id: 'todos',       label: 'Todo' },
+    { id: 'entradas',    label: 'Entradas' },
+    { id: 'principales', label: 'Platos Principales' },
+    { id: 'bebidas',     label: 'Bebidas' },
+    { id: 'postres',     label: 'Postres' },
+    { id: 'infantil',    label: 'Menú Infantil' }
+  ],
+
+  items: [
+    /* ── Entradas ── */
+    { id: 'e1', cat: 'entradas', name: 'Burrata ahumada', price: 9800, popular: true,
+      desc: 'Burrata cremosa, tomates confitados, albahaca y aceite de oliva ahumado.',
+      ingredients: ['Burrata', 'Tomate cherry confitado', 'Albahaca', 'Aceite de oliva', 'Pistacho'],
+      allergens: ['Lácteos', 'Frutos secos'], diets: ['vegetariano'],
+      img: 'https://images.unsplash.com/photo-1608897013039-887f21d8c804?auto=format&fit=crop&w=1200&q=80' },
+    { id: 'e2', cat: 'entradas', name: 'Empanadas de humita', price: 7200,
+      desc: 'Masa al rescoldo, choclo cremoso, cebolla asada y queso de la casa.',
+      ingredients: ['Choclo', 'Cebolla', 'Queso', 'Masa casera'],
+      allergens: ['Gluten', 'Lácteos'], diets: ['vegetariano', 'sin-tacc'],
+      img: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=1200&q=80' },
+    { id: 'e3', cat: 'entradas', name: 'Tartar de atún', price: 11500, popular: true,
+      desc: 'Atún fresco, sésamo, aguacate, ponzu y jalapeño en pickles.',
+      ingredients: ['Atún', 'Aguacate', 'Sésamo', 'Ponzu', 'Jalapeño'],
+      allergens: ['Pescado', 'Soja', 'Sésamo'], diets: ['sin-tacc'],
+      img: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=1200&q=80' },
+    { id: 'e4', cat: 'entradas', name: 'Ensalada de estación', price: 7900,
+      desc: 'Hojas verdes, frutos rojos, queso de cabra y vinagreta de miel.',
+      ingredients: ['Hojas verdes', 'Frutos rojos', 'Queso de cabra', 'Nuez', 'Vinagreta'],
+      allergens: ['Lácteos', 'Frutos secos'], diets: ['vegetariano', 'sin-tacc'],
+      img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=80' },
+
+    /* ── Principales ── */
+    { id: 'p1', cat: 'principales', name: 'Risotto de hongos', price: 14200, popular: true,
+      desc: 'Arroz carnaroli, mix de hongos, parmesano añejo y aceite de trufa.',
+      ingredients: ['Arroz carnaroli', 'Hongos', 'Parmesano', 'Trufa', 'Vino blanco'],
+      allergens: ['Lácteos', 'Sulfitos'], diets: ['vegetariano', 'sin-tacc'],
+      img: 'https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&w=1200&q=80' },
+    { id: 'p2', cat: 'principales', name: 'Ojo de bife 400g', price: 21900, popular: true,
+      desc: 'Madurado 28 días, puré de papas ahumadas y chimichurri de la casa.',
+      ingredients: ['Lomo alto', 'Papa ahumada', 'Chimichurri', 'Sal de escamas'],
+      allergens: [], diets: ['sin-tacc'],
+      img: 'https://images.unsplash.com/photo-1546964124-0cce460f38ef?auto=format&fit=crop&w=1200&q=80' },
+    { id: 'p3', cat: 'principales', name: 'Berenjenas a la brasa', price: 12400,
+      desc: 'Berenjena al rescoldo, tahiní, granada, cilantro y semillas tostadas.',
+      ingredients: ['Berenjena', 'Tahiní', 'Granada', 'Cilantro', 'Limon'],
+      allergens: ['Sésamo'], diets: ['vegano', 'sin-tacc', 'vegetariano'],
+      img: 'https://images.unsplash.com/photo-1511690743698-d9d85f2fbf38?auto=format&fit=crop&w=1200&q=80' },
+    { id: 'p4', cat: 'principales', name: 'Salmón al pil pil', price: 19800,
+      desc: 'Salmón rosado, salsa de ajo y guindilla, verdes salteados.',
+      ingredients: ['Salmón', 'Ajo', 'Guindilla', 'Espinaca', 'Limón'],
+      allergens: ['Pescado'], diets: ['sin-tacc'],
+      img: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1200&q=80' },
+    { id: 'p5', cat: 'principales', name: 'Paella de verduras', price: 13900,
+      desc: 'Arroz bomba, azafrán, alcachofas, garbanzos y pimentón ahumado.',
+      ingredients: ['Arroz bomba', 'Azafrán', 'Alcachofa', 'Garbanzo', 'Pimentón'],
+      allergens: [], diets: ['vegano', 'vegetariano', 'sin-tacc'],
+      img: 'https://images.unsplash.com/photo-1534080564583-6be75777b70a?auto=format&fit=crop&w=1200&q=80' },
+    { id: 'p6', cat: 'principales', name: 'Milanesa napolitana', price: 12800,
+      desc: 'Carne de ternera, salsa de tomate casera, mozzarella y papas fritas.',
+      ingredients: ['Ternera', 'Tomate', 'Mozzarella', 'Huevo', 'Papa'],
+      allergens: ['Gluten', 'Huevo', 'Lácteos'], diets: [],
+      img: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80' },
+
+    /* ── Bebidas ── */
+    { id: 'b1', cat: 'bebidas', name: 'Limonada de jengibre', price: 4200,
+      desc: 'Limón, jengibre fresco, miel y hierbabuena.',
+      ingredients: ['Limón', 'Jengibre', 'Miel', 'Hierbabuena'],
+      allergens: [], diets: ['vegano', 'vegetariano', 'sin-tacc'],
+      img: 'https://images.unsplash.com/photo-1523677011781-c91d1bbe2f9e?auto=format&fit=crop&w=1200&q=80' },
+    { id: 'b2', cat: 'bebidas', name: 'Cold brew de especialidad', price: 4900, popular: true,
+      desc: 'Café de origen tostado artesanalmente, extracción en frío 18 hs.',
+      ingredients: ['Café de origen', 'Agua filtrada'],
+      allergens: [], diets: ['vegano', 'vegetariano', 'sin-tacc'],
+      img: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=1200&q=80' },
+    { id: 'b3', cat: 'bebidas', name: 'Copa de Malbec', price: 6800,
+      desc: 'Malbec de montaña, notas de ciruela y chocolate negro.',
+      ingredients: ['Malbec'],
+      allergens: ['Sulfitos'], diets: ['vegano', 'sin-tacc'],
+      img: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1200&q=80' },
+    { id: 'b4', cat: 'bebidas', name: 'Agua saborizada', price: 3200,
+      desc: 'Agua con pomelo rosado, romero y pimienta rosa.',
+      ingredients: ['Agua', 'Pomelo', 'Romero', 'Pimienta rosa'],
+      allergens: [], diets: ['vegano', 'vegetariano', 'sin-tacc'],
+      img: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=1200&q=80' },
+
+    /* ── Postres ── */
+    { id: 'd1', cat: 'postres', name: 'Flan de dulce de leche', price: 5600, popular: true,
+      desc: 'Flan casero, dulce de leche artesanal y crema chantilly.',
+      ingredients: ['Huevo', 'Dulce de leche', 'Crema', 'Vainilla'],
+      allergens: ['Lácteos', 'Huevo'], diets: ['sin-tacc'],
+      img: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=1200&q=80' },
+    { id: 'd2', cat: 'postres', name: 'Tarta de frutos rojos', price: 6200,
+      desc: 'Base crocante, crema pastelera de vainilla y frutos rojos frescos.',
+      ingredients: ['Frutos rojos', 'Crema pastelera', 'Mantequilla', 'Harina'],
+      allergens: ['Gluten', 'Lácteos', 'Huevo'], diets: ['vegetariano'],
+      img: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=1200&q=80' },
+    { id: 'd3', cat: 'postres', name: 'Sorbete de mango', price: 4800,
+      desc: 'Mango natural, limón y menta. Sin lácteos.',
+      ingredients: ['Mango', 'Limón', 'Menta', 'Azúcar'],
+      allergens: [], diets: ['vegano', 'vegetariano', 'sin-tacc'],
+      img: 'https://images.unsplash.com/photo-1505394033641-40c6ad1178d7?auto=format&fit=crop&w=1200&q=80' },
+    { id: 'd4', cat: 'postres', name: 'Brownie con helado', price: 6400,
+      desc: 'Brownie tibio de chocolate 70% y helado de vainilla.',
+      ingredients: ['Chocolate 70%', 'Huevo', 'Mantequilla', 'Helado de vainilla'],
+      allergens: ['Gluten', 'Lácteos', 'Huevo'], diets: ['vegetariano'],
+      img: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=1200&q=80' },
+
+    /* ── Menú Infantil ── */
+    { id: 'k1', cat: 'infantil', name: 'Mini milanesa con papas', price: 7400,
+      desc: 'Milanesa pequeña de ternera con papas fritas y adjudería suave.',
+      ingredients: ['Ternera', 'Huevo', 'Papa', 'Pan rallado'],
+      allergens: ['Gluten', 'Huevo'], diets: ['infantil'],
+      img: 'https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=1200&q=80' },
+    { id: 'k2', cat: 'infantil', name: 'Fideos con salsa de tomate', price: 6800,
+      desc: 'Frescas del día con tomate natural, sin especias.',
+      ingredients: ['Fideos frescos', 'Tomate', 'Aceite de oliva'],
+      allergens: ['Gluten'], diets: ['infantil', 'vegetariano'],
+      img: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=1200&q=80' },
+    { id: 'k3', cat: 'infantil', name: 'Palitos de pollo con puré', price: 7600,
+      desc: 'Pollo empanado al horno con puré de papa cremoso.',
+      ingredients: ['Pollo', 'Pan rallado', 'Papa', 'Leche'],
+      allergens: ['Gluten', 'Lácteos'], diets: ['infantil'],
+      img: 'https://images.unsplash.com/photo-1562967916-eb82221dfb92?auto=format&fit=crop&w=1200&q=80' },
+    { id: 'k4', cat: 'infantil', name: 'Vaso de frutas', price: 4500,
+      desc: 'Frutas de estación cortadas en gajos con jugo de naranja.',
+      ingredients: ['Frutas variadas', 'Naranja'],
+      allergens: [], diets: ['infantil', 'vegano', 'vegetariano', 'sin-tacc'],
+      img: 'https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&w=1200&q=80' }
+  ]
+};
+
+/* ═══════════ Helpers ═══════════ */
+const $  = (s, c = document) => c.querySelector(s);
+const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
+const M = MENU_DATA;
+
+const fmt = n => M.currency + ' ' + n.toLocaleString('es-AR');
+const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+const byId = id => M.items.find(i => i.id === id);
+const dietLabel = k => (M.diets.find(d => d.key === k) || {}).short || k;
+const catLabel = id => (M.categories.find(c => c.id === id) || {}).label || id;
+
+function waLink(msg) { return 'https://wa.me/' + M.whatsapp.number + '?text=' + encodeURIComponent(msg); }
+function imgTag(src, alt, cls) {
+  return '<img src="' + src + '" alt="' + alt + '" loading="lazy" class="' + cls + '" onerror="this.remove()" />';
+}
+
+/* ═══════════ Estado ═══════════ */
+let activeCat = 'todos';
+let activeDiets = new Set();   // OR: el plato puede tener cualquiera de los seleccionados
+let query = '';
+let cart = {};                 // { itemId: qty }
+let modalQty = 1;
+let modalId = null;
+
+/* ═══════════ Pintado base ═══════════ */
+function paintBrand() {
+  $('#brandLogo').textContent = M.brand.logo;
+  $('#brandName').textContent = M.brand.name;
+  $('#brandTag').textContent = M.brand.tagline;
+  $('#heroImg').src = M.brand.heroImage;
+  $('#heroImg').alt = M.brand.name;
+  $('#heroEyebrow').textContent = M.brand.tagline;
+  $('#heroTitle').textContent = M.brand.name;
+  $('#heroDesc').textContent = M.brand.description;
+  $('#heroHours').textContent = M.hours;
+  $('#heroAddress').textContent = M.address;
+  $('#heroDelivery').textContent = M.delivery;
+  $('#footName').textContent = M.brand.name;
+  $('#footDesc').textContent = M.brand.description;
+  $('#footHours').textContent = M.hours;
+  $('#footContact').innerHTML =
+    '<li><a href="' + waLink('Hola ' + M.brand.name + '!') + '" target="_blank" rel="noopener" class="font-semibold text-ink hover:text-wine">WhatsApp ' + M.whatsapp.display + '</a></li>' +
+    '<li>' + M.address + '</li>' +
+    '<li class="text-ink/55">' + M.delivery + '</li>';
+  $('#directWa').href = waLink('Hola ' + M.brand.name + '! Quisiera hacer una consulta.');
+  document.title = M.brand.name + ' — Menú digital';
+}
+
+function paintControls() {
+  $('#categoryTabs').innerHTML = M.categories.map(c =>
+    '<button data-cat="' + c.id + '" class="tab-chip shrink-0 whitespace-nowrap rounded-full border border-ink/15 bg-white px-4 py-2 text-xs font-semibold text-ink/70 transition hover:border-ink/40 ' +
+    (c.id === activeCat ? 'tab-active' : '') + '">' + c.label + '</button>').join('');
+
+  $('#dietFilters').innerHTML =
+    '<span class="mr-1 hidden text-[10px] font-semibold uppercase tracking-[.2em] text-ink/35 sm:inline">Dieta:</span>' +
+    M.diets.map(d =>
+      '<button data-diet="' + d.key + '" class="diet-chip rounded-full border px-3.5 py-1.5 text-[11px] font-semibold transition" style="background:#fff;border-color:rgba(18,16,14,.15);color:rgba(18,16,14,.65)" data-bg="' + d.bg + '" data-fg="' + d.fg + '">' + d.label + '</button>'
+    ).join('');
+
+  $$('.tab-chip').forEach(b => b.addEventListener('click', () => {
+    activeCat = b.dataset.cat;
+    $$('.tab-chip').forEach(x => x.classList.toggle('tab-active', x.dataset.cat === activeCat));
+    render();
+  }));
+
+  $$('.diet-chip').forEach(b => b.addEventListener('click', () => {
+    const k = b.dataset.diet;
+    activeDiets.has(k) ? activeDiets.delete(k) : activeDiets.add(k);
+    syncDietChips();
+    render();
+  }));
+}
+
+function syncDietChips() {
+  $$('.diet-chip').forEach(b => {
+    const on = activeDiets.has(b.dataset.diet);
+    b.style.background = on ? b.dataset.bg : '#fff';
+    b.style.borderColor = on ? b.dataset.fg : 'rgba(18,16,14,.15)';
+    b.style.color = on ? b.dataset.fg : 'rgba(18,16,14,.65)';
+    b.style.boxShadow = on ? '0 0 0 1.5px ' + b.dataset.fg + ' inset' : 'none';
+  });
+}
+
+/* ═══════════ Filtro + render ═══════════ */
+function filtered() {
+  const q = norm(query.trim());
+  return M.items.filter(it => {
+    if (activeCat !== 'todos' && it.cat !== activeCat) return false;
+    if (activeDiets.size && !Array.from(activeDiets).some(k => it.diets.includes(k))) return false;
+    if (q) {
+      const hay = norm(it.name + ' ' + it.desc + ' ' + it.ingredients.join(' '));
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function badgeHtml(it) {
+  return it.diets.map(k => {
+    const d = M.diets.find(x => x.key === k); if (!d) return '';
+    return '<span class="rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide" style="background:' + d.bg + ';color:' + d.fg + '">' + d.short + '</span>';
+  }).join('');
+}
+
+function cardHtml(it, i) {
+  return '<button data-item="' + it.id + '" class="reveal group flex w-full items-start gap-4 rounded-3xl border border-ink/10 bg-white p-3 text-left shadow-card transition hover:-translate-y-1 hover:border-ink/25" style="transition-delay:' + ((i % 6) * 60) + 'ms">' +
+    '<div class="img-holder relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl sm:h-28 sm:w-28">' +
+      imgTag(it.img, it.name, 'h-full w-full object-cover transition duration-500 group-hover:scale-110') +
+      (it.popular ? '<span class="absolute left-1.5 top-1.5 rounded-md bg-wine px-1.5 py-0.5 text-[9px] font-bold uppercase text-white">Top</span>' : '') +
+    '</div>' +
+    '<div class="min-w-0 flex-1 py-0.5">' +
+      '<div class="flex items-start justify-between gap-3">' +
+        '<h3 class="font-display text-lg font-semibold leading-snug text-ink">' + it.name + '</h3>' +
+        '<span class="shrink-0 font-display text-base font-semibold text-wine">' + fmt(it.price) + '</span>' +
+      '</div>' +
+      '<p class="mt-1 line-clamp-2 text-[13px] leading-relaxed text-ink/55">' + it.desc + '</p>' +
+      '<div class="mt-2.5 flex flex-wrap items-center gap-1.5">' + badgeHtml(it) +
+        (it.allergens.length ? '<span class="text-[10px] font-medium uppercase tracking-wide text-ink/35">Alérgenos: ' + it.allergens.join(', ') + '</span>' : '') +
+      '</div>' +
+    '</div>' +
+  '</button>';
+}
+
+function render() {
+  const list = filtered();
+  const root = $('#menuRoot');
+  $('#resultCount').textContent = list.length + (list.length === 1 ? ' plato' : ' platos');
+  const filtering = activeCat !== 'todos' || activeDiets.size > 0 || query.trim() !== '';
+  $('#resetFilters').classList.toggle('hidden', !filtering);
+  $('#emptyState').classList.toggle('hidden', list.length > 0);
+
+  if (list.length === 0) { root.innerHTML = ''; return; }
+
+  // Vista agrupada cuando no hay filtros activos
+  if (!filtering) {
+    root.innerHTML = M.categories.filter(c => c.id !== 'todos').map(c => {
+      const items = list.filter(i => i.cat === c.id);
+      if (!items.length) return '';
+      return '<section class="mb-10">' +
+        '<div class="mb-4 flex items-center gap-4">' +
+          '<h2 class="font-display text-2xl font-semibold text-ink sm:text-3xl">' + c.label + '</h2>' +
+          '<span class="h-px flex-1 bg-ink/15"></span>' +
+          '<span class="text-xs text-ink/35">' + items.length + '</span>' +
+        '</div>' +
+        '<div class="grid gap-3 sm:grid-cols-2">' + items.map(cardHtml).join('') + '</div>' +
+      '</section>';
+    }).join('');
+  } else {
+    root.innerHTML = '<div class="grid gap-3 sm:grid-cols-2">' + list.map(cardHtml).join('') + '</div>';
+  }
+
+  $$('[data-item]', root).forEach(b => b.addEventListener('click', () => openItem(b.dataset.item)));
+  observeReveals();
+}
+
+function resetAll() {
+  activeCat = 'todos'; activeDiets.clear(); query = '';
+  $('#search').value = ''; $('#clearSearch').classList.add('hidden'); $('#clearSearch').classList.remove('grid');
+  $$('.tab-chip').forEach(x => x.classList.toggle('tab-active', x.dataset.cat === 'todos'));
+  syncDietChips(); render();
+}
+
+/* ═══════════ Modal detalle ═══════════ */
+function openItem(id) {
+  const it = byId(id); if (!it) return;
+  modalId = id; modalQty = 1;
+  const d = k => M.diets.find(x => x.key === k);
+
+  $('#itemModalPanel').innerHTML =
+    '<div class="img-holder relative h-56 sm:h-64">' + imgTag(it.img, it.name, 'h-full w-full object-cover') +
+      '<div class="absolute inset-0 bg-gradient-to-t from-ink/70 to-transparent"></div>' +
+      '<button data-close class="absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-full bg-white/90 text-ink transition hover:bg-white" aria-label="Cerrar">' +
+        '<svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg></button>' +
+      '<div class="absolute bottom-4 left-5 right-5 flex flex-wrap items-center gap-1.5">' + badgeHtml(it) + '</div>' +
+    '</div>' +
+    '<div class="p-5 sm:p-6">' +
+      '<div class="flex items-start justify-between gap-4">' +
+        '<div><h3 class="font-display text-2xl font-semibold text-ink sm:text-3xl">' + it.name + '</h3>' +
+        '<p class="mt-0.5 text-xs uppercase tracking-wider text-ink/40">' + catLabel(it.cat) + '</p></div>' +
+        '<p class="font-display text-2xl font-semibold text-wine">' + fmt(it.price) + '</p>' +
+      '</div>' +
+      '<p class="mt-3 text-sm leading-relaxed text-ink/65">' + it.desc + '</p>' +
+
+      '<p class="mt-5 text-[11px] font-semibold uppercase tracking-[.2em] text-ink/40">Ingredientes</p>' +
+      '<div class="mt-2 flex flex-wrap gap-1.5">' + it.ingredients.map(x =>
+        '<span class="rounded-lg bg-bone px-2.5 py-1 text-[11px] font-medium text-ink/70">' + x + '</span>').join('') + '</div>' +
+
+      '<div class="mt-5 rounded-2xl border p-4 ' + (it.allergens.length ? 'border-amber-200 bg-amber-50' : 'border-ink/10 bg-bone') + '">' +
+        '<p class="text-[11px] font-semibold uppercase tracking-[.2em] ' + (it.allergens.length ? 'text-amber-700' : 'text-ink/40') + '">Alérgenos</p>' +
+        '<p class="mt-1 text-sm ' + (it.allergens.length ? 'text-amber-800' : 'text-ink/55') + '">' +
+          (it.allergens.length ? 'Contiene: ' + it.allergens.join(', ') + '. Consultanos por trazabilidad en cocina.' : 'No contiene alérgenos declarados de los 14 grupos principales.') + '</p>' +
+      '</div>' +
+
+      '<div class="sticky bottom-0 mt-5 flex items-center gap-3 bg-white py-2">' +
+        '<div class="flex items-center gap-1 rounded-full border border-ink/15 p-1">' +
+          '<button data-qty="-1" class="grid h-9 w-9 place-items-center rounded-full text-lg font-semibold text-ink transition hover:bg-bone">−</button>' +
+          '<span id="modalQty" class="w-8 text-center text-sm font-bold">1</span>' +
+          '<button data-qty="1" class="grid h-9 w-9 place-items-center rounded-full text-lg font-semibold text-ink transition hover:bg-bone">+</button>' +
+        '</div>' +
+        '<button id="addToCart" class="flex-1 rounded-full bg-ink px-5 py-3.5 text-sm font-semibold text-bone transition hover:bg-ink-700">Agregar · <span id="modalTotal">' + fmt(it.price) + '</span></button>' +
+      '</div>' +
+    '</div>';
+
+  const m = $('#itemModal');
+  m.classList.remove('hidden'); document.body.style.overflow = 'hidden';
+  $$('[data-close]', m).forEach(el => el.addEventListener('click', closeItem));
+  $$('[data-qty]', m).forEach(b => b.addEventListener('click', () => {
+    modalQty = Math.max(1, Math.min(20, modalQty + parseInt(b.dataset.qty, 10)));
+    $('#modalQty').textContent = modalQty;
+    $('#modalTotal').textContent = fmt(it.price * modalQty);
+  }));
+  $('#addToCart').addEventListener('click', () => { addToCart(id, modalQty); closeItem(); });
+}
+function closeItem() { $('#itemModal').classList.add('hidden'); document.body.style.overflow = drawerOpen() ? 'hidden' : ''; }
+
+/* ═══════════ Carrito ═══════════ */
+const cartCount = () => Object.values(cart).reduce((a, b) => a + b, 0);
+const cartTotal = () => Object.entries(cart).reduce((s, [id, q]) => s + byId(id).price * q, 0);
+
+function addToCart(id, qty) {
+  cart[id] = (cart[id] || 0) + qty;
+  syncCart(); bumpBar();
+}
+function setQty(id, q) {
+  if (q <= 0) delete cart[id]; else cart[id] = Math.min(50, q);
+  syncCart();
+}
+function bumpBar() {
+  const el = $('#cartBarInner');
+  el.classList.remove('scale-[.97]');
+  requestAnimationFrame(() => el.classList.add('scale-[.97]'));
+  setTimeout(() => el.classList.remove('scale-[.97]'), 180);
+}
+
+function syncCart() {
+  const n = cartCount(), total = cartTotal();
+  $('#topCartCount').textContent = n;
+  $('#barCount').textContent = n;
+  $('#barTotal').textContent = fmt(total);
+  $('#drawerSubtotal').textContent = fmt(total);
+  $('#drawerMeta').textContent = n ? n + (n === 1 ? ' ítem · ' : ' ítems · ') + fmt(total) : '';
+  $('#cartBarInner').style.transform = n ? 'translateY(0)' : 'translateY(140%)';
+  $('#cartBarInner').style.opacity = n ? '1' : '0';
+  $('#cartBarInner').style.pointerEvents = n ? 'auto' : 'none';
+
+  const box = $('#cartItems');
+  if (!n) {
+    box.innerHTML = '<div class="grid h-full place-items-center py-16 text-center">' +
+      '<div><p class="font-display text-xl text-ink">Tu pedido está vacío</p>' +
+      '<p class="mt-1.5 text-sm text-ink/50">Agregá platos desde el menú para armar tu pedido.</p></div></div>';
+    $('#sendOrder').disabled = true;
+    $('#sendOrder').classList.add('opacity-40', 'pointer-events-none');
+    return;
+  }
+  $('#sendOrder').disabled = false;
+  $('#sendOrder').classList.remove('opacity-40', 'pointer-events-none');
+
+  box.innerHTML = Object.entries(cart).map(([id, q]) => {
+    const it = byId(id);
+    return '<div class="flex items-center gap-2 border-b border-ink/8 py-3.5 last:border-0">' +
+      '<div class="img-holder h-12 w-12 shrink-0 overflow-hidden rounded-xl">' + imgTag(it.img, it.name, 'h-full w-full object-cover') + '</div>' +
+      '<div class="min-w-0 flex-1">' +
+        '<p class="line-clamp-2 text-sm font-semibold leading-tight text-ink">' + it.name + '</p>' +
+        '<p class="mt-0.5 text-xs text-ink/45">' + fmt(it.price) + ' c/u</p>' +
+      '</div>' +
+      '<div class="flex shrink-0 items-center gap-0.5 rounded-full border border-ink/12 p-0.5">' +
+        '<button data-dec="' + id + '" class="grid h-6 w-6 place-items-center rounded-full text-ink/70 transition hover:bg-bone">−</button>' +
+        '<span class="w-5 text-center text-xs font-bold">' + q + '</span>' +
+        '<button data-inc="' + id + '" class="grid h-6 w-6 place-items-center rounded-full text-ink/70 transition hover:bg-bone">+</button>' +
+      '</div>' +
+      '<p class="shrink-0 text-right text-xs font-semibold text-ink">' + fmt(it.price * q) + '</p>' +
+      '<button data-rm="' + id + '" class="grid h-7 w-7 shrink-0 place-items-center rounded-full text-ink/30 transition hover:bg-rose-50 hover:text-rose-500" aria-label="Quitar">' +
+        '<svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg></button>' +
+    '</div>';
+  }).join('');
+
+  $$('[data-inc]', box).forEach(b => b.addEventListener('click', () => setQty(b.dataset.inc, (cart[b.dataset.inc] || 0) + 1)));
+  $$('[data-dec]', box).forEach(b => b.addEventListener('click', () => setQty(b.dataset.dec, (cart[b.dataset.dec] || 0) - 1)));
+  $$('[data-rm]', box).forEach(b => b.addEventListener('click', () => setQty(b.dataset.rm, 0)));
+}
+
+/* ═══════════ Drawer ═══════════ */
+const drawerOpen = () => !$('#drawerWrap').classList.contains('invisible');
+function openDrawer() {
+  const w = $('#drawerWrap');
+  w.classList.remove('invisible'); w.classList.remove('opacity-0');
+  $('#drawer').classList.remove('translate-x-full');
+  document.body.style.overflow = 'hidden';
+}
+function closeDrawer() {
+  const w = $('#drawerWrap');
+  w.classList.add('opacity-0');
+  $('#drawer').classList.add('translate-x-full');
+  setTimeout(() => { w.classList.add('invisible'); }, 350);
+  if ($('#itemModal').classList.contains('hidden')) document.body.style.overflow = '';
+}
+
+function buildOrderMsg() {
+  const lines = Object.entries(cart).map(([id, q]) => {
+    const it = byId(id);
+    return '• ' + q + '× ' + it.name + ' — ' + fmt(it.price * q);
+  });
+  const note = $('#orderNote').value.trim();
+  return '*Nuevo pedido — ' + M.brand.name + '*\n' +
+    '━━━━━━━━━━━━\n' +
+    lines.join('\n') + '\n' +
+    '━━━━━━━━━━━━\n' +
+    '*Subtotal: ' + fmt(cartTotal()) + '*\n' +
+    (note ? '\n*Aclaraciones:* ' + note + '\n' : '') +
+    '\n_Método de entrega / pago a acordar. Gracias!_';
+}
+
+/* ═══════════ Reveal / scroll ═══════════ */
+let io;
+function observeReveals() {
+  if (!io) {
+    io = new IntersectionObserver(en => {
+      en.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+  }
+  $$('.reveal:not(.in)').forEach(el => io.observe(el));
+}
+
+window.addEventListener('scroll', () => {
+  const on = window.scrollY > 20;
+  $('#bar').classList.toggle('shadow-card', on);
+  $('#bar').classList.toggle('bg-white/95', on);
+}, { passive: true });
+
+/* ═══════════ Eventos ═══════════ */
+$('#search').addEventListener('input', e => {
+  query = e.target.value;
+  $('#clearSearch').classList.toggle('hidden', !query);
+  $('#clearSearch').classList.toggle('grid', !!query);
+  render();
+});
+$('#clearSearch').addEventListener('click', () => {
+  query = ''; $('#search').value = '';
+  $('#clearSearch').classList.add('hidden'); $('#clearSearch').classList.remove('grid');
+  render(); $('#search').focus();
+});
+$('#resetFilters').addEventListener('click', resetAll);
+$('#emptyReset').addEventListener('click', resetAll);
+$('#topCart').addEventListener('click', openDrawer);
+$('#openDrawer').addEventListener('click', openDrawer);
+$('#closeDrawer').addEventListener('click', closeDrawer);
+$('#keepBrowsing').addEventListener('click', closeDrawer);
+$('#drawerBackdrop').addEventListener('click', closeDrawer);
+$('#sendOrder').addEventListener('click', () => {
+  if (!cartCount()) return;
+  window.open(waLink(buildOrderMsg()), '_blank', 'noopener');
+});
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (!$('#itemModal').classList.contains('hidden')) closeItem();
+  else if (drawerOpen()) closeDrawer();
+});
+$('#itemModal').addEventListener('click', e => { if (e.target.hasAttribute('data-close')) closeItem(); });
+
+/* ═══════════ Init ═══════════ */
+paintBrand();
+paintControls();
+render();
+syncCart();
+observeReveals();
+</script>
+</body>
+</html>

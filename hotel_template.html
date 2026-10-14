@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hotel · Posada — Plantilla Demo</title>
+<meta name="description" content="Plantilla demo de sitio para hoteles y posadas. Catálogo de habitaciones, reservas por WhatsApp y experiencias." />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<script>
+  if (window.tailwind) { tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink:    { DEFAULT: '#0c111d', 700: '#161d2e', 500: '#2a3348' },
+          gold:   { DEFAULT: '#c9a227', light: '#e3c766', dark: '#a4821a' },
+          cream:  { DEFAULT: '#f7f4ee', dark: '#efe9df' }
+        },
+        fontFamily: {
+          display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+          sans: ['Inter', 'system-ui', 'sans-serif']
+        },
+        boxShadow: {
+          soft: '0 20px 60px -25px rgba(12,17,29,.35)',
+          lift: '0 30px 70px -30px rgba(12,17,29,.55)'
+        }
+      }
+    }
+  } }
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { -webkit-font-smoothing: antialiased; }
+  section[id] { scroll-margin-top: 84px; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  .hero-img { transform: scale(1.06); animation: heroZoom 18s ease-out forwards; }
+  @keyframes heroZoom { to { transform: scale(1); } }
+
+  .grad-text { background: linear-gradient(100deg,#fff 10%,#e3c766 55%,#c9a227 90%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .img-holder { background-image: linear-gradient(135deg,#1c2438 0%,#2c3852 45%,#4b5878 100%); }
+  .chip-active { background:#0c111d !important; color:#fff !important; border-color:#0c111d !important; }
+  .nav-link.active { color:#c9a227; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity:1; transform:none; transition:none; } .hero-img { animation:none; transform:none; } }
+</style>
+</head>
+<body class="bg-cream font-sans text-ink antialiased">
+
+<!-- ══════════ HEADER FIJO ══════════ -->
+<header id="siteHeader" class="fixed inset-x-0 top-0 z-50 transition-all duration-300">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6">
+    <div id="headerBar" class="mt-3 flex items-center justify-between gap-4 rounded-full border border-white/15 bg-ink/40 px-4 py-2.5 backdrop-blur-xl transition-all duration-300 sm:px-6">
+      <a href="#inicio" class="group flex items-center gap-3">
+        <span id="brandLogo" class="grid h-9 w-9 place-items-center rounded-full border border-gold/60 font-display text-sm font-semibold text-gold transition group-hover:bg-gold group-hover:text-ink">PA</span>
+        <span class="leading-tight">
+          <span id="brandName" class="block font-display text-lg font-semibold tracking-wide text-white">Posada Aurora</span>
+          <span id="brandTagline" class="hidden text-[10px] uppercase tracking-[.25em] text-white/60 sm:block">Refugio de lujo</span>
+        </span>
+      </a>
+
+      <nav class="hidden items-center gap-7 lg:flex" id="desktopNav"></nav>
+
+      <div class="flex items-center gap-2">
+        <a id="headerWaBtn" href="#" target="_blank" rel="noopener"
+           class="hidden items-center gap-2 rounded-full bg-[#25D366] px-4 py-2.5 text-sm font-semibold text-ink shadow-lg shadow-[#25D366]/25 transition hover:brightness-105 sm:inline-flex">
+          <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884a9.82 9.82 0 0 1 6.988 2.896 9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.414"/></svg>
+          <span>Reservar</span>
+        </a>
+        <button id="menuToggle" aria-label="Abrir menú" class="grid h-10 w-10 place-items-center rounded-full border border-white/20 text-white transition hover:bg-white/10 lg:hidden">
+          <svg id="iconOpen" viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round"/></svg>
+          <svg id="iconClose" viewBox="0 0 24 24" class="hidden h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Menú móvil -->
+  <div id="mobileMenu" class="mx-4 mt-2 hidden overflow-hidden rounded-3xl border border-white/10 bg-ink/95 p-4 backdrop-blur-xl sm:mx-6 lg:hidden">
+    <nav id="mobileNav" class="flex flex-col gap-1"></nav>
+    <a id="mobileWaBtn" href="#" target="_blank" rel="noopener"
+       class="mt-3 flex items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-4 py-3.5 text-sm font-semibold text-ink">
+      <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current"><path d="M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884a9.82 9.82 0 0 1 6.988 2.896 9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.414"/></svg>
+      Escribir por WhatsApp
+    </a>
+  </div>
+</header>
+
+<!-- ══════════ HERO + RESERVA ══════════ -->
+<section id="inicio" class="relative flex min-h-[100svh] flex-col justify-end overflow-hidden bg-ink pt-28">
+  <div class="img-holder absolute inset-0">
+    <img id="heroImg" class="hero-img h-full w-full object-cover opacity-70" alt="" />
+  </div>
+  <div class="absolute inset-0 bg-gradient-to-b from-ink/85 via-ink/45 to-ink"></div>
+  <div class="absolute inset-0 bg-gradient-to-r from-ink/70 via-transparent to-transparent"></div>
+
+  <div class="relative mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6 sm:pb-14">
+    <div class="max-w-3xl">
+      <span id="heroEyebrow" class="reveal inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[.3em] text-gold-light"></span>
+      <h1 id="heroTitle" class="reveal mt-6 font-display text-5xl font-semibold leading-[1.02] text-white sm:text-7xl lg:text-8xl"></h1>
+      <p id="heroSubtitle" class="reveal mt-5 max-w-xl text-base leading-relaxed text-white/75 sm:text-lg"></p>
+      <div class="reveal mt-8 flex flex-wrap gap-3">
+        <a id="heroCtaPrimary" href="#habitaciones" class="rounded-full bg-gold px-7 py-3.5 text-sm font-semibold text-ink shadow-lift transition hover:bg-gold-light">Ver habitaciones</a>
+        <a id="heroCtaSecondary" href="#ubicacion" class="rounded-full border border-white/25 px-7 py-3.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/10">Cómo llegar</a>
+      </div>
+    </div>
+
+    <!-- Widget de fechas -->
+    <div class="reveal mt-10 rounded-3xl border border-white/15 bg-white/95 p-4 shadow-lift backdrop-blur-xl sm:mt-14 sm:rounded-[28px] sm:p-6">
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <label class="block">
+          <span class="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-ink/50">Check-in</span>
+          <input id="checkin" type="date" class="w-full rounded-2xl border border-ink/10 bg-cream px-4 py-3 text-sm font-medium text-ink outline-none transition focus:border-gold focus:bg-white" />
+        </label>
+        <label class="block">
+          <span class="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-ink/50">Check-out</span>
+          <input id="checkout" type="date" class="w-full rounded-2xl border border-ink/10 bg-cream px-4 py-3 text-sm font-medium text-ink outline-none transition focus:border-gold focus:bg-white" />
+        </label>
+        <label class="block">
+          <span class="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-ink/50">Huéspedes</span>
+          <select id="guests" class="w-full appearance-none rounded-2xl border border-ink/10 bg-cream px-4 py-3 text-sm font-medium text-ink outline-none transition focus:border-gold focus:bg-white"></select>
+        </label>
+        <label class="block">
+          <span class="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-ink/50">Tipo de alojamiento</span>
+          <select id="roomType" class="w-full appearance-none rounded-2xl border border-ink/10 bg-cream px-4 py-3 text-sm font-medium text-ink outline-none transition focus:border-gold focus:bg-white"></select>
+        </label>
+        <div class="flex items-end">
+          <button id="bookingBtn" class="w-full rounded-2xl bg-ink px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-ink-700"></button>
+        </div>
+      </div>
+      <div class="mt-3 flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-ink/50">
+        <span id="bookingHint">Respuesta habitual en menos de 15 minutos.</span>
+        <button id="engineBtn" class="hidden font-semibold text-ink underline decoration-gold decoration-2 underline-offset-4 hover:text-gold-dark"></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ PRUEBA SOCIAL / RATINGS ══════════ -->
+<section class="border-y border-ink/10 bg-white">
+  <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
+    <div class="grid gap-8 lg:grid-cols-[auto_1fr] lg:items-center lg:gap-14">
+      <div class="reveal max-w-sm">
+        <p class="text-[11px] font-semibold uppercase tracking-[.3em] text-gold-dark">Reseñas verificadas</p>
+        <h2 class="mt-3 font-display text-3xl font-semibold leading-tight text-ink sm:text-4xl">Lo que dicen nuestros huéspedes</h2>
+        <div class="mt-5 flex items-center gap-4">
+          <div>
+            <p class="font-display text-5xl font-semibold text-ink"><span data-count data-value="4.8" data-dec="1">0</span></p>
+            <p class="text-xs uppercase tracking-wider text-ink/50">Promedio general</p>
+          </div>
+          <div class="h-12 w-px bg-ink/10"></div>
+          <div>
+            <p class="font-display text-5xl font-semibold text-ink"><span data-count data-value="3480" data-suffix="+">0</span></p>
+            <p class="text-xs uppercase tracking-wider text-ink/50">Opiniones</p>
+          </div>
+        </div>
+      </div>
+      <div id="ratingsGrid" class="grid gap-4 sm:grid-cols-3"></div>
+    </div>
+
+    <div id="statsRow" class="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-ink/10 bg-ink/10 sm:mt-14 lg:grid-cols-4"></div>
+  </div>
+</section>
+
+<!-- ══════════ HABITACIONES ══════════ -->
+<section id="habitaciones" class="bg-cream py-16 sm:py-24">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6">
+    <div class="reveal flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+      <div class="max-w-2xl">
+        <p class="text-[11px] font-semibold uppercase tracking-[.3em] text-gold-dark">Alojamiento</p>
+        <h2 class="mt-3 font-display text-4xl font-semibold leading-tight text-ink sm:text-5xl">Habitaciones &amp; suites</h2>
+        <p class="mt-4 text-ink/60">Espacios pensados para descansar. Filtrá por lo que necesitás y consultá disponibilidad al instante.</p>
+      </div>
+      <div class="flex items-center gap-3 text-sm text-ink/50">
+        <span id="roomsCount" class="font-semibold text-ink">0</span> alojamientos disponibles
+      </div>
+    </div>
+
+    <div class="reveal mt-8 flex flex-wrap gap-2" id="amenityFilters"></div>
+
+    <div id="roomsGrid" class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
+    <p id="roomsEmpty" class="hidden rounded-3xl border border-dashed border-ink/20 bg-white p-12 text-center text-ink/50">No hay alojamientos con esos filtros. Probá con menos opciones.</p>
+  </div>
+</section>
+
+<!-- ══════════ EXPERIENCIAS ══════════ -->
+<section id="experiencias" class="relative bg-ink py-16 text-white sm:py-24">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6">
+    <div class="reveal max-w-2xl">
+      <p class="text-[11px] font-semibold uppercase tracking-[.3em] text-gold">La experiencia</p>
+      <h2 class="mt-3 font-display text-4xl font-semibold leading-tight sm:text-5xl">Momentos que se recuerdan</h2>
+      <p class="mt-4 text-white/60">Cada detalle pensado para que no quieras salir. Estas son las insignias de la casa.</p>
+    </div>
+    <div id="experiencesGrid" class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"></div>
+  </div>
+</section>
+
+<!-- ══════════ UBICACIÓN & CONTACTO ══════════ -->
+<section id="ubicacion" class="bg-cream py-16 sm:py-24">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6">
+    <div class="reveal max-w-2xl">
+      <p class="text-[11px] font-semibold uppercase tracking-[.3em] text-gold-dark">Ubicación</p>
+      <h2 class="mt-3 font-display text-4xl font-semibold leading-tight text-ink sm:text-5xl">Estamos acá</h2>
+    </div>
+
+    <div class="mt-8 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+      <div class="reveal relative overflow-hidden rounded-[28px] border border-ink/10 bg-white shadow-soft">
+        <div class="img-holder relative h-72 sm:h-[420px]">
+          <iframe id="mapFrame" class="absolute inset-0 h-full w-full grayscale-[35%]" style="border:0" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mapa"></iframe>
+        </div>
+        <div class="flex flex-wrap items-center justify-between gap-3 p-5">
+          <div class="flex items-start gap-3">
+            <span class="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ink text-gold">
+              <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            </span>
+            <div>
+              <p id="mapAddress" class="text-sm font-semibold text-ink"></p>
+              <p id="mapCity" class="text-xs text-ink/50"></p>
+            </div>
+          </div>
+          <a id="directionsBtn" href="#" target="_blank" rel="noopener" class="rounded-full border border-ink/15 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-ink transition hover:bg-ink hover:text-white">Cómo llegar</a>
+        </div>
+      </div>
+
+      <div id="contactCards" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-1"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer class="border-t border-white/10 bg-ink pb-28 pt-14 text-white sm:pb-14">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6">
+    <div class="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
+      <div>
+        <div class="flex items-center gap-3">
+          <span id="footerLogo" class="grid h-10 w-10 place-items-center rounded-full border border-gold/60 font-display text-sm font-semibold text-gold">PA</span>
+          <span id="footerName" class="font-display text-xl font-semibold"></span>
+        </div>
+        <p id="footerAbout" class="mt-4 max-w-sm text-sm leading-relaxed text-white/55"></p>
+      </div>
+      <div>
+        <p class="text-[11px] font-semibold uppercase tracking-[.3em] text-gold">Navegación</p>
+        <ul id="footerNav" class="mt-4 space-y-2.5 text-sm text-white/60"></ul>
+      </div>
+      <div>
+        <p class="text-[11px] font-semibold uppercase tracking-[.3em] text-gold">Contacto</p>
+        <ul id="footerContact" class="mt-4 space-y-2.5 text-sm text-white/60"></ul>
+      </div>
+    </div>
+    <div class="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-white/40 sm:flex-row">
+      <p id="footerCopy"></p>
+      <p>Plantilla demo · Hecho con Tailwind CSS</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════ FLOAT WHATSAPP (mobile) ══════════ -->
+<a id="floatWa" href="#" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp"
+   class="fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-3.5 font-semibold text-ink shadow-2xl shadow-[#25D366]/40 transition hover:scale-105 sm:hidden">
+  <svg viewBox="0 0 24 24" class="h-6 w-6 fill-current"><path d="M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884a9.82 9.82 0 0 1 6.988 2.896 9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.414"/></svg>
+  <span class="text-sm">Reservar</span>
+</a>
+
+<!-- ══════════ MODAL HABITACIÓN ══════════ -->
+<div id="roomModal" class="fixed inset-0 z-[60] hidden">
+  <div class="absolute inset-0 bg-ink/70 backdrop-blur-sm" data-close></div>
+  <div class="relative flex h-full items-end justify-center p-0 sm:items-center sm:p-6">
+    <div id="roomModalPanel" class="max-h-[92svh] w-full max-w-3xl overflow-y-auto rounded-t-[28px] bg-white shadow-lift sm:rounded-[28px]"></div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   HOTEL_DATA · ÚNICA FUENTE DE DATOS
+   Editá este objeto para adaptar la demo a cada cliente:
+   textos, fotos, precios, habitaciones, redes y WhatsApp.
+   ═══════════════════════════════════════════════════════════════ */
+const HOTEL_DATA = {
+  brand: {
+    name: 'Posada Aurora',
+    tagline: 'Refugio de lujo en la costa',
+    logo: 'PA',
+    about: 'Doce suites frente al mar, desayuno de autor y una piscina que mira al horizonte. La posada reabrió sus puertas tras una restauración integral.',
+    copyright: '© 2026 Posada Aurora. Todos los derechos reservados.'
+  },
+
+  // Dejá engineUrl vacío ('') para usar solo WhatsApp.
+  // Ej: engineUrl: 'https://www.booking.com/hotel/ar/posada.html'
+  booking: { engineUrl: '' },
+
+  whatsapp: { number: '5493415551234', display: '+54 9 341 555 1234' },
+  email: 'reservas@posadaaurora.com',
+  address: { line1: 'Av. Costanera 4820', line2: 'Mar del Plata, Buenos Aires' },
+  mapQuery: 'Mar del Plata, Buenos Aires, Argentina',
+  hours: 'Recepción 24 hs · Check-in 14:00 · Check-out 11:00',
+
+  nav: [
+    { id: 'inicio',        label: 'Inicio' },
+    { id: 'habitaciones',  label: 'Habitaciones' },
+    { id: 'experiencias',  label: 'Experiencias' },
+    { id: 'ubicacion',     label: 'Ubicación' }
+  ],
+
+  hero: {
+    eyebrow: 'Boutique · Frente al mar · 5★',
+    title: 'Donde el mar\nse convierte en hogar',
+    subtitle: 'Doce suites, piscina infinita y desayuno casero. Elegí tus fechas y consultá disponibilidad en un solo paso.',
+    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=2000&q=80'
+  },
+
+  // Contadores de prueba social (se animan al entrar en pantalla)
+  ratings: [
+    { source: 'Booking.com',   score: 9.4, scale: 10,  reviews: 1284, note: 'Excepcional' },
+    { source: 'TripAdvisor',   score: 4.8, scale: 5,   reviews: 962,  note: 'Viajeros lo eligen' },
+    { source: 'Google Reviews',score: 4.7, scale: 5,   reviews: 1234, note: 'Reseñas verificadas' }
+  ],
+
+  stats: [
+    { value: 12,  suffix: '',   label: 'Suites exclusivas' },
+    { value: 3480,suffix: '+',  label: 'Huéspedes felices' },
+    { value: 15,  suffix: ' min', label: 'Respuesta WhatsApp' },
+    { value: 98,  suffix: '%',   label: 'Volverían' }
+  ],
+
+  // Filtros del catálogo. `key` debe coincidir con los ids de amenities de abajo.
+  amenityFilters: [
+    { key: 'ac',        label: 'Aire acondicionado' },
+    { key: 'wifi',      label: 'WiFi' },
+    { key: 'kitchen',   label: 'Cocina' },
+    { key: 'pool-view', label: 'Vista a la piscina' },
+    { key: 'breakfast', label: 'Desayuno incluido' },
+    { key: 'jacuzzi',   label: 'Jacuzzi' }
+  ],
+
+  amenities: {
+    ac:        'Aire acondicionado',
+    wifi:      'WiFi de alta velocidad',
+    kitchen:   'Cocina equipada',
+    'pool-view':'Vista a la piscina',
+    breakfast: 'Desayuno incluido',
+    jacuzzi:   'Jacuzzi privado',
+    tv:        'Smart TV 50"',
+    balcony:   'Balcón privado',
+    safe:      'Caja de seguridad'
+  },
+
+  rooms: [
+    {
+      id: 'suite-mar', name: 'Suite Vista Mar', tag: 'Más elegida',
+      price: 320, currency: '$', unit: 'noche', guests: 2, beds: 'Cama king', size: 42,
+      image: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=1400&q=80',
+      desc: 'Suite principal con ventanales de piso a techo frente al Atlántico, balcón privado y baño en mármol.',
+      amenities: ['ac','wifi','breakfast','jacuzzi','tv','balcony','safe']
+    },
+    {
+      id: 'deluxe-king', name: 'Deluxe King', tag: '',
+      price: 190, currency: '$', unit: 'noche', guests: 2, beds: 'Cama king', size: 28,
+      image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1400&q=80',
+      desc: 'Habitación amplia con iluminación cálida, escritorio de trabajo y ducha de lluvia.',
+      amenities: ['ac','wifi','breakfast','tv','safe']
+    },
+    {
+      id: 'familiar', name: 'Familiar Twin', tag: 'Ideal familias',
+      price: 240, currency: '$', unit: 'noche', guests: 4, beds: '2 queen', size: 36,
+      image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1400&q=80',
+      desc: 'Dos ambientes comunicados, espacio para cuna y zona de juegos. Pensada para familias.',
+      amenities: ['ac','wifi','kitchen','breakfast','tv','safe']
+    },
+    {
+      id: 'bungalow', name: 'Bungalow Jardín', tag: '',
+      price: 210, currency: '$', unit: 'noche', guests: 3, beds: 'Queen + sillón', size: 32,
+      image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1400&q=80',
+      desc: 'Entrada independiente al jardín interior, con terraza propia y hammock.',
+      amenities: ['ac','wifi','kitchen','tv','balcony']
+    },
+    {
+      id: 'suite-piscina', name: 'Suite Piscina', tag: 'Vista piscina',
+      price: 280, currency: '$', unit: 'noche', guests: 2, beds: 'Cama king', size: 38,
+      image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&w=1400&q=80',
+      desc: 'Da directo a la piscina: salís del cuarto y estás al agua. Terraza con tumbonas.',
+      amenities: ['ac','wifi','pool-view','breakfast','jacuzzi','tv']
+    },
+    {
+      id: 'loft', name: 'Loft Romance', tag: 'Parejas',
+      price: 350, currency: '$', unit: 'noche', guests: 2, beds: 'Cama king', size: 45,
+      image: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1400&q=80',
+      desc: 'Doble altura, jacuzzi panorámico y desayuno a la habitación incluido.',
+      amenities: ['ac','wifi','kitchen','pool-view','breakfast','jacuzzi','tv','safe']
+    }
+  ],
+
+  experiences: [
+    { title: 'Piscina infinita', text: 'Agua climatizada todo el año y bar de pileta al atardecer.',
+      image: 'https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1200&q=80', icon: 'wave' },
+    { title: 'Desayuno de autor', text: 'Panificados del día, frutas de estación y café de especialidad.',
+      image: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?auto=format&fit=crop&w=1200&q=80', icon: 'coffee' },
+    { title: 'Spa & masajes', text: 'Circuito seco y tratamientos con reserva previa en recepción.',
+      image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1200&q=80', icon: 'sparkle' },
+    { title: 'Parrilla & BBQ', text: 'Quincho techado con carbón y vinos locales para los huéspedes.',
+      image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1200&q=80', icon: 'flame' }
+  ],
+
+  contact: [
+    { title: 'WhatsApp', value: '+54 9 341 555 1234', action: 'wa',  note: 'Respuesta en minutos' },
+    { title: 'Email',    value: 'reservas@posadaaurora.com', action: 'mail', note: 'Grupos y eventos' },
+    { title: 'Teléfono', value: '+54 223 444 8899', action: 'tel',  note: 'Llamadas 24 hs' },
+    { title: 'Horarios', value: 'Recepción 24 hs', action: 'none', note: 'Check-in 14:00 · Check-out 11:00' }
+  ],
+
+  socials: [
+    { label: 'Instagram', url: '#' },
+    { label: 'Facebook',  url: '#' },
+    { label: 'TripAdvisor', url: '#' }
+  ]
+};
+
+/* ═══════════ Helpers ═══════════ */
+const $  = (s, c = document) => c.querySelector(s);
+const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
+const D = HOTEL_DATA;
+const money = n => D.rooms[0].currency + n.toLocaleString('es-AR');
+
+function waLink(msg) {
+  return 'https://wa.me/' + D.whatsapp.number + '?text=' + encodeURIComponent(msg);
+}
+function imgTag(src, alt, cls) {
+  return '<img src="' + src + '" alt="' + alt + '" loading="lazy" class="' + cls +
+         '" onerror="this.remove()" />';
+}
+function icon(name, cls) {
+  const p = {
+    wave:   '<path d="M2 8c2.5 0 2.5 2 5 2s2.5-2 5-2 2.5 2 5 2 2.5-2 5-2M2 14c2.5 0 2.5 2 5 2s2.5-2 5-2 2.5 2 5 2 2.5-2 5-2"/>',
+    coffee: '<path d="M4 8h11v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Z"/><path d="M15 9h2.5a2.5 2.5 0 0 1 0 5H15"/><path d="M7 3v2M11 3v2"/>',
+    sparkle:'<path d="M12 3l1.8 4.7L18.5 9.5 13.8 11.3 12 16l-1.8-4.7L5.5 9.5l4.7-1.8L12 3Z"/><path d="M18.5 16.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8.8-2Z"/>',
+    flame:  '<path d="M12 21c3.9 0 7-2.7 7-6.5 0-4.5-4.5-6.2-3.8-11C11 4.7 9 7.8 9 10.5c0 1.4.6 2.4 1.4 3.1-.3-2.2.6-3.9 2-5 .3 2 2.1 2.9 2.1 4.9 0 1.2-.6 2.1-1.5 2.7.6.4 1.4.7 2.3.7 1.6 0 2.7-1.1 2.7-2.9"/><path d="M8.5 14.5C6.9 13.7 6 12.2 6 10.6c0-1.3.7-2.4 1.9-3.3"/>',
+    wifi:   '<path d="M5 12.5a10 10 0 0 1 14 0M8 15.8a5.5 5.5 0 0 1 8 0"/><circle cx="12" cy="19" r="1.2" fill="currentColor" stroke="none"/>',
+    phone:  '<path d="M6.5 3.5h3l1.5 4-2 1.5a12 12 0 0 0 6 6l1.5-2 4 1.5v3A2.5 2.5 0 0 1 18 20 15 15 0 0 1 4 6a2.5 2.5 0 0 1 2.5-2.5Z"/>',
+    mail:   '<rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="m4 8 8 5 8-5"/>',
+    pin:    '<path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/>',
+    clock:  '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+    bed:    '<path d="M3 18v-6.5A2.5 2.5 0 0 1 5.5 9H18a3 3 0 0 1 3 3v6"/><path d="M3 14h18M3 18h18"/><circle cx="7.5" cy="12" r="1.6"/>',
+    users:  '<circle cx="9" cy="8.5" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 6.2a3 3 0 0 1 0 5.6M17 14.5a5.5 5.5 0 0 1 3.5 4.5"/>',
+    area:   '<rect x="4" y="4" width="16" height="16" rx="2.5"/><path d="M9 4v16M4 9h16"/>',
+    check:  '<path d="m5 12.5 4.5 4.5L19 7"/>',
+    arrow:  '<path d="M5 12h14M13 6l6 6-6 6"/>',
+    whatsapp:'<path d="M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884a9.82 9.82 0 0 1 6.988 2.896 9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.414"/>'
+  }[name] || '';
+  return '<svg viewBox="0 0 24 24" class="' + (cls || 'h-5 w-5') + '" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' + p + '</svg>';
+}
+
+/* ═══════════ Branding & nav ═══════════ */
+function paintBrand() {
+  $('#brandLogo').textContent = D.brand.logo;
+  $('#footerLogo').textContent = D.brand.logo;
+  $('#brandName').textContent = D.brand.name;
+  $('#brandTagline').textContent = D.brand.tagline;
+  $('#footerName').textContent = D.brand.name;
+  $('#footerAbout').textContent = D.brand.about;
+  $('#footerCopy').textContent = D.brand.copyright;
+  document.title = D.brand.name + ' — ' + D.brand.tagline;
+
+  const navHtml = D.nav.map(n => '<a href="#' + n.id + '" class="nav-link text-sm font-medium text-white/75 transition hover:text-gold-light" data-nav="' + n.id + '">' + n.label + '</a>').join('');
+  $('#desktopNav').innerHTML = navHtml;
+  $('#mobileNav').innerHTML = D.nav.map(n => '<a href="#' + n.id + '" class="rounded-xl px-3 py-3 text-sm font-medium text-white/80 transition hover:bg-white/10 hover:text-gold-light">' + n.label + '</a>').join('');
+  $('#footerNav').innerHTML = D.nav.map(n => '<li><a href="#' + n.id + '" class="transition hover:text-gold-light">' + n.label + '</a></li>').join('');
+
+  const wa = waLink('Hola ' + D.brand.name + '! Quisiera consultar disponibilidad.');
+  ['#headerWaBtn', '#mobileWaBtn', '#floatWa'].forEach(s => $(s).href = wa);
+
+  $('#footerContact').innerHTML =
+    '<li><a href="' + wa + '" target="_blank" rel="noopener" class="transition hover:text-gold-light">WhatsApp ' + D.whatsapp.display + '</a></li>' +
+    '<li><a href="mailto:' + D.email + '" class="transition hover:text-gold-light">' + D.email + '</a></li>' +
+    '<li>' + D.address.line1 + ', ' + D.address.line2 + '</li>' +
+    '<li class="pt-2 flex flex-wrap gap-3">' + D.socials.map(s => '<a href="' + s.url + '" class="border-b border-gold/40 pb-0.5 transition hover:text-gold-light">' + s.label + '</a>').join('') + '</li>';
+}
+
+/* ═══════════ Hero ═══════════ */
+function paintHero() {
+  $('#heroImg').src = D.hero.image;
+  $('#heroImg').alt = D.brand.name;
+  $('#heroEyebrow').textContent = D.hero.eyebrow;
+  $('#heroTitle').innerHTML = D.hero.title.split('\n').map(l => l.trim()).join('<br />');
+  $('#heroSubtitle').textContent = D.hero.subtitle;
+
+  const g = $('#guests');
+  g.innerHTML = [1,2,3,4,5,6].map(n => '<option value="' + n + '">' + n + (n === 1 ? ' huésped' : ' huéspedes') + '</option>').join('');
+  g.value = '2';
+
+  const rt = $('#roomType');
+  rt.innerHTML = '<option value="Cualquier alojamiento">Cualquier alojamiento</option>' +
+    D.rooms.map(r => '<option value="' + r.name + '">' + r.name + '</option>').join('');
+
+  const t = new Date(); const t2 = new Date(Date.now() + 864e5);
+  const iso = d => d.toISOString().slice(0, 10);
+  $('#checkin').value = iso(t); $('#checkin').min = iso(t);
+  $('#checkout').value = iso(t2); $('#checkout').min = iso(new Date(t.getTime() + 864e5));
+  $('#checkin').addEventListener('change', e => {
+    const next = new Date(e.target.value); next.setDate(next.getDate() + 1);
+    $('#checkout').min = iso(next);
+    if ($('#checkout').value <= e.target.value) $('#checkout').value = iso(next);
+  });
+
+  const hasEngine = !!D.booking.engineUrl;
+  const btn = $('#bookingBtn');
+  btn.innerHTML = hasEngine ? 'Ver disponibilidad' : 'Consultar por WhatsApp';
+  btn.classList.toggle('bg-gold', hasEngine);
+  btn.classList.toggle('text-ink', hasEngine);
+  btn.classList.toggle('bg-ink', !hasEngine);
+  btn.classList.toggle('text-white', !hasEngine);
+  btn.addEventListener('click', onBook);
+  if (hasEngine) {
+    const e = $('#engineBtn');
+    e.classList.remove('hidden');
+    e.textContent = '¿Prefieres WhatsApp? Escribinos';
+    e.addEventListener('click', () => window.open(waLink(buildBookMsg()), '_blank', 'noopener'));
+  }
+}
+
+function buildBookMsg() {
+  const f = v => { const d = new Date(v + 'T00:00:00'); return isNaN(d) ? v : d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' }); };
+  return 'Hola ' + D.brand.name + '! Quisiera consultar disponibilidad:\n' +
+    '• Check-in: ' + f($('#checkin').value) + '\n' +
+    '• Check-out: ' + f($('#checkout').value) + '\n' +
+    '• Huéspedes: ' + $('#guests').value + '\n' +
+    '• Alojamiento: ' + $('#roomType').value + '\n\n¿Me pasan opciones y tarifas?';
+}
+function onBook() {
+  if (D.booking.engineUrl) {
+    const u = new URL(D.booking.engineUrl);
+    u.searchParams.set('checkin', $('#checkin').value);
+    u.searchParams.set('checkout', $('#checkout').value);
+    u.searchParams.set('group_adults', $('#guests').value);
+    window.open(u.toString(), '_blank', 'noopener');
+  } else {
+    window.open(waLink(buildBookMsg()), '_blank', 'noopener');
+  }
+}
+
+/* ═══════════ Ratings & stats ═══════════ */
+function paintRatings() {
+  $('#ratingsGrid').innerHTML = D.ratings.map((r, i) => {
+    const pct = Math.round((r.score / r.scale) * 100);
+    const scoreTxt = r.scale === 10 ? r.score.toFixed(1).replace('.', ',') : r.score.toFixed(1).replace('.', ',');
+    return '<div class="reveal rounded-3xl border border-ink/10 bg-cream p-5 transition hover:-translate-y-1 hover:shadow-soft" style="transition-delay:' + (i * 90) + 'ms">' +
+      '<div class="flex items-center justify-between"><p class="text-sm font-semibold text-ink">' + r.source + '</p>' +
+      '<span class="rounded-lg bg-ink px-2 py-1 text-xs font-bold text-gold-light">' + scoreTxt + '</span></div>' +
+      '<div class="mt-3 h-1.5 overflow-hidden rounded-full bg-ink/10"><div class="h-full rounded-full bg-gold" style="width:0" data-bar="' + pct + '"></div></div>' +
+      '<p class="mt-3 text-xs text-ink/55"><span data-count data-value="' + r.reviews + '">0</span> reseñas · ' + r.note + '</p>' +
+    '</div>';
+  }).join('');
+
+  $('#statsRow').innerHTML = D.stats.map((s, i) =>
+    '<div class="reveal bg-white p-6 text-center" style="transition-delay:' + (i * 70) + 'ms">' +
+      '<p class="font-display text-4xl font-semibold text-ink"><span data-count data-value="' + s.value + '" data-suffix="' + s.suffix + '">0</span></p>' +
+      '<p class="mt-1 text-[11px] uppercase tracking-[.2em] text-ink/45">' + s.label + '</p>' +
+    '</div>'
+  ).join('');
+}
+
+function animateCount(el) {
+  if (el.dataset.done) return; el.dataset.done = '1';
+  const target = parseFloat(el.dataset.value || '0');
+  const dec = parseInt(el.dataset.dec || '0', 10);
+  const suffix = el.dataset.suffix || '';
+  const dur = 1500, start = performance.now();
+  const step = now => {
+    const p = Math.min((now - start) / dur, 1);
+    const e = 1 - Math.pow(1 - p, 3);
+    const v = target * e;
+    el.textContent = (dec ? v.toFixed(dec).replace('.', ',') : Math.round(v).toLocaleString('es-AR')) + suffix;
+    if (p < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+/* ═══════════ Habitaciones ═══════════ */
+let activeFilters = new Set();
+
+function paintFilters() {
+  $('#amenityFilters').innerHTML =
+    '<button data-filter="all" class="filter-chip chip-active rounded-full border border-ink/15 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-wider transition hover:border-ink">Todos</button>' +
+    D.amenityFilters.map(f =>
+      '<button data-filter="' + f.key + '" class="filter-chip rounded-full border border-ink/15 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-wider text-ink/70 transition hover:border-ink hover:text-ink">' + f.label + '</button>'
+    ).join('');
+
+  $$('.filter-chip').forEach(btn => btn.addEventListener('click', () => {
+    const k = btn.dataset.filter;
+    if (k === 'all') activeFilters.clear();
+    else activeFilters.has(k) ? activeFilters.delete(k) : activeFilters.add(k);
+    $$('.filter-chip').forEach(b => {
+      const on = b.dataset.filter === 'all' ? activeFilters.size === 0 : activeFilters.has(b.dataset.filter);
+      b.classList.toggle('chip-active', on);
+      b.classList.toggle('text-ink/70', !on);
+    });
+    paintRooms();
+  }));
+}
+
+function paintRooms() {
+  const list = D.rooms.filter(r => Array.from(activeFilters).every(k => r.amenities.includes(k)));
+  $('#roomsCount').textContent = list.length;
+  $('#roomsEmpty').classList.toggle('hidden', list.length > 0);
+
+  $('#roomsGrid').innerHTML = list.map((r, i) => {
+    const chips = r.amenities.slice(0, 4).map(a =>
+      '<span class="rounded-lg bg-cream px-2.5 py-1 text-[11px] font-medium text-ink/65">' + (D.amenities[a] || a) + '</span>').join('');
+    return '<article class="reveal group overflow-hidden rounded-[26px] border border-ink/10 bg-white shadow-soft transition hover:-translate-y-1.5 hover:shadow-lift" style="transition-delay:' + (i % 3 * 80) + 'ms">' +
+      '<div class="img-holder relative h-56 overflow-hidden">' +
+        imgTag(r.image, r.name, 'h-full w-full object-cover transition duration-700 group-hover:scale-105') +
+        (r.tag ? '<span class="absolute left-4 top-4 rounded-full bg-gold px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-ink">' + r.tag + '</span>' : '') +
+        '<span class="absolute bottom-4 right-4 rounded-full bg-ink/85 px-3.5 py-1.5 text-sm font-semibold text-white backdrop-blur">' + money(r.price) + ' <span class="text-white/60">/ ' + r.unit + '</span></span>' +
+      '</div>' +
+      '<div class="p-5">' +
+        '<h3 class="font-display text-2xl font-semibold text-ink">' + r.name + '</h3>' +
+        '<div class="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-ink/55">' +
+          '<span class="flex items-center gap-1.5">' + icon('users','h-4 w-4') + r.guests + ' huéspedes</span>' +
+          '<span class="flex items-center gap-1.5">' + icon('bed','h-4 w-4') + r.beds + '</span>' +
+          '<span class="flex items-center gap-1.5">' + icon('area','h-4 w-4') + r.size + ' m²</span>' +
+        '</div>' +
+        '<p class="mt-3 line-clamp-2 text-sm leading-relaxed text-ink/60">' + r.desc + '</p>' +
+        '<div class="mt-4 flex flex-wrap gap-1.5">' + chips + '</div>' +
+        '<div class="mt-5 flex gap-2">' +
+          '<button class="flex-1 rounded-full bg-ink px-4 py-3 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-ink-700" data-book="' + r.id + '">Reservar</button>' +
+          '<button class="rounded-full border border-ink/15 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-ink transition hover:border-ink" data-detail="' + r.id + '">Detalle</button>' +
+        '</div>' +
+      '</div></article>';
+  }).join('');
+
+  $$('[data-book]').forEach(b => b.addEventListener('click', () => {
+    const r = D.rooms.find(x => x.id === b.dataset.book);
+    window.open(waLink('Hola ' + D.brand.name + '! Me interesa la ' + r.name + ' (' + money(r.price) + ' por ' + r.unit + '). ¿Hay disponibilidad?'), '_blank', 'noopener');
+  }));
+  $$('[data-detail]').forEach(b => b.addEventListener('click', () => openRoomModal(b.dataset.detail)));
+  observeReveals();
+}
+
+function openRoomModal(id) {
+  const r = D.rooms.find(x => x.id === id); if (!r) return;
+  $('#roomModalPanel').innerHTML =
+    '<div class="img-holder relative h-56 sm:h-72">' + imgTag(r.image, r.name, 'h-full w-full object-cover') +
+      '<button data-close class="absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-full bg-white/90 text-ink transition hover:bg-white" aria-label="Cerrar">' +
+      '<svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg></button>' +
+    '</div>' +
+    '<div class="p-6 sm:p-8">' +
+      '<div class="flex flex-wrap items-start justify-between gap-3">' +
+        '<div><h3 class="font-display text-3xl font-semibold text-ink">' + r.name + '</h3>' +
+        '<p class="mt-1 text-sm text-ink/55">' + r.guests + ' huéspedes · ' + r.beds + ' · ' + r.size + ' m²</p></div>' +
+        '<p class="rounded-full bg-gold/15 px-4 py-2 font-display text-xl font-semibold text-gold-dark">' + money(r.price) + ' <span class="text-xs font-sans text-ink/50">/ ' + r.unit + '</span></p>' +
+      '</div>' +
+      '<p class="mt-4 text-sm leading-relaxed text-ink/65">' + r.desc + '</p>' +
+      '<p class="mt-6 text-[11px] font-semibold uppercase tracking-[.25em] text-ink/40">Comodidades</p>' +
+      '<ul class="mt-3 grid gap-2 sm:grid-cols-2">' + r.amenities.map(a =>
+        '<li class="flex items-center gap-2.5 rounded-xl bg-cream px-3.5 py-2.5 text-sm text-ink/75">' +
+        '<span class="grid h-5 w-5 place-items-center rounded-full bg-ink text-gold">' + icon('check','h-3 w-3') + '</span>' + (D.amenities[a] || a) + '</li>').join('') + '</ul>' +
+      '<div class="sticky bottom-0 mt-7 flex flex-col gap-2 bg-white py-2 sm:flex-row">' +
+        '<button class="flex-1 rounded-full bg-[#25D366] px-6 py-3.5 text-sm font-semibold text-ink transition hover:brightness-105" data-book-modal="' + r.id + '">Consultar por WhatsApp</button>' +
+        '<button data-close class="rounded-full border border-ink/15 px-6 py-3.5 text-sm font-semibold text-ink transition hover:bg-cream">Cerrar</button>' +
+      '</div>' +
+    '</div>';
+  const m = $('#roomModal');
+  m.classList.remove('hidden'); document.body.style.overflow = 'hidden';
+  $$('[data-close]', m).forEach(el => el.addEventListener('click', closeRoomModal));
+  $('[data-book-modal]', m).addEventListener('click', () => {
+    window.open(waLink('Hola ' + D.brand.name + '! Quisiera reservar la ' + r.name + '. ¿Está disponible?'), '_blank', 'noopener');
+  });
+}
+function closeRoomModal() { $('#roomModal').classList.add('hidden'); document.body.style.overflow = ''; }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeRoomModal(); closeMenu(); } });
+$('#roomModal').addEventListener('click', e => { if (e.target.hasAttribute('data-close')) closeRoomModal(); });
+
+/* ═══════════ Experiencias ═══════════ */
+function paintExperiences() {
+  $('#experiencesGrid').innerHTML = D.experiences.map((x, i) =>
+    '<article class="reveal group relative overflow-hidden rounded-[26px] border border-white/10 bg-ink-700 h-72 transition hover:-translate-y-1.5" style="transition-delay:' + (i * 90) + 'ms">' +
+      '<div class="img-holder absolute inset-0">' + imgTag(x.image, x.title, 'h-full w-full object-cover opacity-55 transition duration-700 group-hover:scale-110 group-hover:opacity-75') + '</div>' +
+      '<div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent"></div>' +
+      '<div class="relative flex h-full flex-col justify-end p-5">' +
+        '<span class="mb-3 grid h-10 w-10 place-items-center rounded-full border border-gold/50 bg-ink/60 text-gold backdrop-blur">' + icon(x.icon, 'h-5 w-5') + '</span>' +
+        '<h3 class="font-display text-2xl font-semibold text-white">' + x.title + '</h3>' +
+        '<p class="mt-1.5 text-sm leading-relaxed text-white/65">' + x.text + '</p>' +
+      '</div>' +
+    '</article>'
+  ).join('');
+}
+
+/* ═══════════ Ubicación & contacto ═══════════ */
+function paintLocation() {
+  const q = encodeURIComponent(D.mapQuery);
+  $('#mapFrame').src = 'https://www.google.com/maps?q=' + q + '&output=embed';
+  $('#mapAddress').textContent = D.address.line1;
+  $('#mapCity').textContent = D.address.line2;
+  $('#directionsBtn').href = 'https://www.google.com/maps/search/?api=1&query=' + q;
+
+  const glyphs = { wa: 'whatsapp', mail: 'mail', tel: 'phone', none: 'clock' };
+  $('#contactCards').innerHTML = D.contact.map((c, i) => {
+    const link = c.action === 'wa' ? waLink('Hola ' + D.brand.name + '!')
+      : c.action === 'mail' ? 'mailto:' + (c.email || D.email)
+      : c.action === 'tel' ? 'tel:' + c.value.replace(/\s/g, '') : '';
+    const glyph = c.action === 'wa'
+      ? '<svg viewBox="0 0 24 24" class="h-5 w-5 fill-current"><path d="M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884a9.82 9.82 0 0 1 6.988 2.896 9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.414"/></svg>'
+      : icon(glyphs[c.action], 'h-5 w-5');
+    const inner =
+      '<span class="grid h-11 w-11 place-items-center rounded-2xl bg-ink text-gold">' + glyph + '</span>' +
+      '<div><p class="text-[11px] font-semibold uppercase tracking-[.2em] text-ink/40">' + c.title + '</p>' +
+      '<p class="mt-0.5 text-sm font-semibold text-ink">' + c.value + '</p>' +
+      '<p class="text-xs text-ink/50">' + c.note + '</p></div>' +
+      (link ? '<span class="ml-auto self-center text-ink/30 transition group-hover:text-gold-dark group-hover:translate-x-1">' + icon('arrow','h-5 w-5') + '</span>' : '');
+    return link
+      ? '<a href="' + link + '" ' + (c.action === 'wa' ? 'target="_blank" rel="noopener"' : '') + ' class="reveal group flex items-center gap-4 rounded-3xl border border-ink/10 bg-white p-5 transition hover:-translate-y-1 hover:shadow-soft" style="transition-delay:' + (i * 70) + 'ms">' + inner + '</a>'
+      : '<div class="reveal flex items-center gap-4 rounded-3xl border border-ink/10 bg-white p-5" style="transition-delay:' + (i * 70) + 'ms">' + inner + '</div>';
+  }).join('');
+}
+
+/* ═══════════ Interacciones generales ═══════════ */
+function closeMenu() {
+  $('#mobileMenu').classList.add('hidden');
+  $('#iconOpen').classList.remove('hidden');
+  $('#iconClose').classList.add('hidden');
+}
+$('#menuToggle').addEventListener('click', () => {
+  const open = $('#mobileMenu').classList.toggle('hidden');
+  $('#iconOpen').classList.toggle('hidden', !open);
+  $('#iconClose').classList.toggle('hidden', open);
+});
+$$('#mobileNav a').forEach(a => a.addEventListener('click', closeMenu));
+
+let scrolled = false;
+window.addEventListener('scroll', () => {
+  const s = window.scrollY > 30;
+  if (s === scrolled) return; scrolled = s;
+  const bar = $('#headerBar');
+  bar.classList.toggle('bg-ink/90', s);
+  bar.classList.toggle('border-white/10', s);
+  bar.classList.toggle('shadow-lift', s);
+  bar.classList.toggle('bg-ink/40', !s);
+  bar.classList.toggle('border-white/15', !s);
+}, { passive: true });
+
+let io;
+function observeReveals() {
+  if (!io) {
+    io = new IntersectionObserver(entries => {
+      entries.forEach(en => {
+        if (!en.isIntersecting) return;
+        en.target.classList.add('in');
+        $$('[data-count]', en.target).forEach(animateCount);
+        if (en.target.matches('[data-count]')) animateCount(en.target);
+        $$('[data-bar]', en.target).forEach(b => { b.style.transition = 'width 1.2s cubic-bezier(.22,1,.36,1)'; b.style.width = b.dataset.bar + '%'; });
+        io.unobserve(en.target);
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+  }
+  $$('.reveal:not(.in)').forEach(el => io.observe(el));
+}
+
+const spy = new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    if (en.isIntersecting) $$('.nav-link').forEach(a => a.classList.toggle('active', a.dataset.nav === en.target.id));
+  });
+}, { threshold: 0.4 });
+
+/* ═══════════ Init ═══════════ */
+paintBrand();
+paintHero();
+paintRatings();
+paintFilters();
+paintRooms();
+paintExperiences();
+paintLocation();
+observeReveals();
+D.nav.forEach(n => { const el = document.getElementById(n.id); if (el) spy.observe(el); });
+</script>
+</body>
+</html>
