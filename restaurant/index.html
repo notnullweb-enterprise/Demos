@@ -91,12 +91,12 @@
 </section>
 
 <!-- ══════════ BUSCADOR + FILTROS (sticky) ══════════ -->
-<div id="filters" class="sticky top-[70px] z-30 border-b border-ink/10 bg-bone/95 backdrop-blur-xl sm:top-[74px]">
+<div id="filters" class="sticky top-[68px] z-30 border-b border-ink/10 bg-bone/95 backdrop-blur-xl sm:top-[72px]">
   <div class="mx-auto max-w-5xl px-4 py-3 sm:px-6 sm:py-4">
     <!-- Buscador -->
     <div class="relative">
       <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-ink/35">
-        <svg viewBox="0 0 24 24" class="h-4.5 w-4.5 h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4" stroke-linecap="round"/></svg>
+        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4" stroke-linecap="round"/></svg>
       </span>
       <input id="search" type="search" placeholder="Buscar plato, ingrediente…" autocomplete="off"
              class="w-full rounded-full border border-ink/12 bg-white py-3 pl-11 pr-11 text-sm text-ink placeholder:text-ink/35 outline-none transition focus:border-ink/40 focus:shadow-card" />
@@ -109,7 +109,7 @@
     <div id="categoryTabs" class="no-scrollbar mt-3 flex gap-2 overflow-x-auto pb-0.5"></div>
 
     <!-- Filtros dietéticos -->
-    <div id="dietFilters" class="mt-2.5 flex flex-wrap items-center gap-2"></div>
+    <div id="dietFilters" class="no-scrollbar -mx-4 mt-2.5 flex flex-nowrap items-center gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0"></div>
   </div>
 </div>
 
@@ -122,7 +122,7 @@
 
   <div id="menuRoot"></div>
 
-  <div id="emptyState" class="hidden rounded-3xl border border-dashed border-ink/20 bg-white p-12 text-center">
+  <div id="emptyState" class="hidden rounded-3xl border border-dashed border-ink/20 bg-white p-8 text-center sm:p-12">
     <p class="font-display text-2xl text-ink">Sin resultados</p>
     <p class="mt-2 text-sm text-ink/55">Probá con otra palabra o quitá algún filtro.</p>
     <button id="emptyReset" class="mt-5 rounded-full bg-ink px-6 py-3 text-xs font-semibold uppercase tracking-wider text-bone transition hover:bg-ink-700">Ver todo el menú</button>
@@ -149,7 +149,7 @@
 </footer>
 
 <!-- ══════════ BARRA FLOTANTE DE PEDIDO ══════════ -->
-<div id="cartBar" class="pointer-events-none fixed inset-x-0 bottom-0 z-40 px-3 pb-3 sm:px-6 sm:pb-5">
+<div id="cartBar" class="pointer-events-none fixed inset-x-0 bottom-0 z-40 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-6 sm:pb-[max(1.25rem,env(safe-area-inset-bottom))]">
   <div class="mx-auto max-w-5xl translate-y-[140%] opacity-0 transition-all duration-400" id="cartBarInner">
     <button id="openDrawer" class="pointer-events-auto flex w-full items-center justify-between gap-4 rounded-2xl bg-ink px-5 py-4 text-bone shadow-2xl transition hover:bg-ink-700 sm:rounded-full">
       <span class="flex items-center gap-3">
@@ -425,12 +425,13 @@ function paintControls() {
   $('#dietFilters').innerHTML =
     '<span class="mr-1 hidden text-[10px] font-semibold uppercase tracking-[.2em] text-ink/35 sm:inline">Dieta:</span>' +
     M.diets.map(d =>
-      '<button data-diet="' + d.key + '" class="diet-chip rounded-full border px-3.5 py-1.5 text-[11px] font-semibold transition" style="background:#fff;border-color:rgba(18,16,14,.15);color:rgba(18,16,14,.65)" data-bg="' + d.bg + '" data-fg="' + d.fg + '">' + d.label + '</button>'
+      '<button data-diet="' + d.key + '" class="diet-chip shrink-0 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-[11px] font-semibold transition" style="background:#fff;border-color:rgba(18,16,14,.15);color:rgba(18,16,14,.65)" data-bg="' + d.bg + '" data-fg="' + d.fg + '">' + d.label + '</button>'
     ).join('');
 
   $$('.tab-chip').forEach(b => b.addEventListener('click', () => {
     activeCat = b.dataset.cat;
     $$('.tab-chip').forEach(x => x.classList.toggle('tab-active', x.dataset.cat === activeCat));
+    b.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
     render();
   }));
 
@@ -474,14 +475,14 @@ function badgeHtml(it) {
 }
 
 function cardHtml(it, i) {
-  return '<button data-item="' + it.id + '" class="reveal group flex w-full items-start gap-4 rounded-3xl border border-ink/10 bg-white p-3 text-left shadow-card transition hover:-translate-y-1 hover:border-ink/25" style="transition-delay:' + ((i % 6) * 60) + 'ms">' +
+  return '<button data-item="' + it.id + '" class="reveal group flex w-full items-start gap-3 rounded-3xl border border-ink/10 bg-white p-3 text-left shadow-card transition hover:-translate-y-1 hover:border-ink/25 sm:gap-4" style="transition-delay:' + ((i % 6) * 60) + 'ms">' +
     '<div class="img-holder relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl sm:h-28 sm:w-28">' +
       imgTag(it.img, it.name, 'h-full w-full object-cover transition duration-500 group-hover:scale-110') +
       (it.popular ? '<span class="absolute left-1.5 top-1.5 rounded-md bg-wine px-1.5 py-0.5 text-[9px] font-bold uppercase text-white">Top</span>' : '') +
     '</div>' +
     '<div class="min-w-0 flex-1 py-0.5">' +
-      '<div class="flex items-start justify-between gap-3">' +
-        '<h3 class="font-display text-lg font-semibold leading-snug text-ink">' + it.name + '</h3>' +
+      '<div class="flex items-start justify-between gap-2 min-[400px]:gap-3">' +
+        '<h3 class="min-w-0 font-display text-lg font-semibold leading-snug text-ink">' + it.name + '</h3>' +
         '<span class="shrink-0 font-display text-base font-semibold text-wine">' + fmt(it.price) + '</span>' +
       '</div>' +
       '<p class="mt-1 line-clamp-2 text-[13px] leading-relaxed text-ink/55">' + it.desc + '</p>' +
@@ -562,13 +563,13 @@ function openItem(id) {
           (it.allergens.length ? 'Contiene: ' + it.allergens.join(', ') + '. Consultanos por trazabilidad en cocina.' : 'No contiene alérgenos declarados de los 14 grupos principales.') + '</p>' +
       '</div>' +
 
-      '<div class="sticky bottom-0 mt-5 flex items-center gap-3 bg-white py-2">' +
-        '<div class="flex items-center gap-1 rounded-full border border-ink/15 p-1">' +
+      '<div class="sticky bottom-0 mt-5 flex items-center gap-2.5 bg-white py-2 sm:gap-3">' +
+        '<div class="flex shrink-0 items-center gap-1 rounded-full border border-ink/15 p-1">' +
           '<button data-qty="-1" class="grid h-9 w-9 place-items-center rounded-full text-lg font-semibold text-ink transition hover:bg-bone">−</button>' +
           '<span id="modalQty" class="w-8 text-center text-sm font-bold">1</span>' +
           '<button data-qty="1" class="grid h-9 w-9 place-items-center rounded-full text-lg font-semibold text-ink transition hover:bg-bone">+</button>' +
         '</div>' +
-        '<button id="addToCart" class="flex-1 rounded-full bg-ink px-5 py-3.5 text-sm font-semibold text-bone transition hover:bg-ink-700">Agregar · <span id="modalTotal">' + fmt(it.price) + '</span></button>' +
+        '<button id="addToCart" class="min-w-0 flex-1 truncate rounded-full bg-ink px-4 py-3.5 text-xs font-semibold text-bone transition hover:bg-ink-700 min-[400px]:px-5 min-[400px]:text-sm">Agregar · <span id="modalTotal">' + fmt(it.price) + '</span></button>' +
       '</div>' +
     '</div>';
 
@@ -628,20 +629,22 @@ function syncCart() {
 
   box.innerHTML = Object.entries(cart).map(([id, q]) => {
     const it = byId(id);
-    return '<div class="flex items-center gap-2 border-b border-ink/8 py-3.5 last:border-0">' +
+    return '<div class="flex flex-wrap items-center gap-x-2 gap-y-2.5 border-b border-ink/8 py-3.5 last:border-0">' +
       '<div class="img-holder h-12 w-12 shrink-0 overflow-hidden rounded-xl">' + imgTag(it.img, it.name, 'h-full w-full object-cover') + '</div>' +
       '<div class="min-w-0 flex-1">' +
         '<p class="line-clamp-2 text-sm font-semibold leading-tight text-ink">' + it.name + '</p>' +
         '<p class="mt-0.5 text-xs text-ink/45">' + fmt(it.price) + ' c/u</p>' +
       '</div>' +
-      '<div class="flex shrink-0 items-center gap-0.5 rounded-full border border-ink/12 p-0.5">' +
-        '<button data-dec="' + id + '" class="grid h-6 w-6 place-items-center rounded-full text-ink/70 transition hover:bg-bone">−</button>' +
-        '<span class="w-5 text-center text-xs font-bold">' + q + '</span>' +
-        '<button data-inc="' + id + '" class="grid h-6 w-6 place-items-center rounded-full text-ink/70 transition hover:bg-bone">+</button>' +
+      '<div class="flex w-full shrink-0 items-center justify-end gap-2.5 sm:w-auto sm:justify-start">' +
+        '<div class="flex shrink-0 items-center gap-0.5 rounded-full border border-ink/12 p-0.5">' +
+          '<button data-dec="' + id + '" class="grid h-7 w-7 place-items-center rounded-full text-ink/70 transition hover:bg-bone">−</button>' +
+          '<span class="w-5 text-center text-xs font-bold">' + q + '</span>' +
+          '<button data-inc="' + id + '" class="grid h-7 w-7 place-items-center rounded-full text-ink/70 transition hover:bg-bone">+</button>' +
+        '</div>' +
+        '<p class="shrink-0 text-right text-xs font-semibold text-ink">' + fmt(it.price * q) + '</p>' +
+        '<button data-rm="' + id + '" class="grid h-7 w-7 shrink-0 place-items-center rounded-full text-ink/30 transition hover:bg-rose-50 hover:text-rose-500" aria-label="Quitar">' +
+          '<svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg></button>' +
       '</div>' +
-      '<p class="shrink-0 text-right text-xs font-semibold text-ink">' + fmt(it.price * q) + '</p>' +
-      '<button data-rm="' + id + '" class="grid h-7 w-7 shrink-0 place-items-center rounded-full text-ink/30 transition hover:bg-rose-50 hover:text-rose-500" aria-label="Quitar">' +
-        '<svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg></button>' +
     '</div>';
   }).join('');
 
